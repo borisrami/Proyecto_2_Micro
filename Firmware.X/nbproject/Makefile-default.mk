@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=src/main.asm src/isr.asm
+SOURCEFILES_QUOTED_IF_SPACED=src/isr.asm src/libtmr2.asm src/main.asm
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/src/main.o ${OBJECTDIR}/src/isr.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/src/main.o.d ${OBJECTDIR}/src/isr.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/src/isr.o ${OBJECTDIR}/src/libtmr2.o ${OBJECTDIR}/src/main.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/src/isr.o.d ${OBJECTDIR}/src/libtmr2.o.d ${OBJECTDIR}/src/main.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/src/main.o ${OBJECTDIR}/src/isr.o
+OBJECTFILES=${OBJECTDIR}/src/isr.o ${OBJECTDIR}/src/libtmr2.o ${OBJECTDIR}/src/main.o
 
 # Source Files
-SOURCEFILES=src/main.asm src/isr.asm
+SOURCEFILES=src/isr.asm src/libtmr2.asm src/main.asm
 
 
 CFLAGS=
@@ -94,14 +94,6 @@ MP_LINKER_DEBUG_OPTION=-r=ROM@0x1F00:0x1FFE -r=RAM@SHARE:0x70:0x70 -r=RAM@SHARE:
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: assemble
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
-${OBJECTDIR}/src/main.o: src/main.asm  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src" 
-	@${RM} ${OBJECTDIR}/src/main.o.d 
-	@${RM} ${OBJECTDIR}/src/main.o 
-	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/src/main.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG -d__MPLAB_DEBUGGER_PICKIT2=1 -q -p$(MP_PROCESSOR_OPTION)  -l\"${OBJECTDIR}/src/main.lst\" -e\"${OBJECTDIR}/src/main.err\" $(ASM_OPTIONS)    -o\"${OBJECTDIR}/src/main.o\" \"src/main.asm\" 
-	@${DEP_GEN} -d "${OBJECTDIR}/src/main.o"
-	@${FIXDEPS} "${OBJECTDIR}/src/main.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
-	
 ${OBJECTDIR}/src/isr.o: src/isr.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/src" 
 	@${RM} ${OBJECTDIR}/src/isr.o.d 
@@ -110,15 +102,23 @@ ${OBJECTDIR}/src/isr.o: src/isr.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${DEP_GEN} -d "${OBJECTDIR}/src/isr.o"
 	@${FIXDEPS} "${OBJECTDIR}/src/isr.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
-else
+${OBJECTDIR}/src/libtmr2.o: src/libtmr2.asm  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/src" 
+	@${RM} ${OBJECTDIR}/src/libtmr2.o.d 
+	@${RM} ${OBJECTDIR}/src/libtmr2.o 
+	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/src/libtmr2.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG -d__MPLAB_DEBUGGER_PICKIT2=1 -q -p$(MP_PROCESSOR_OPTION)  -l\"${OBJECTDIR}/src/libtmr2.lst\" -e\"${OBJECTDIR}/src/libtmr2.err\" $(ASM_OPTIONS)    -o\"${OBJECTDIR}/src/libtmr2.o\" \"src/libtmr2.asm\" 
+	@${DEP_GEN} -d "${OBJECTDIR}/src/libtmr2.o"
+	@${FIXDEPS} "${OBJECTDIR}/src/libtmr2.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
+	
 ${OBJECTDIR}/src/main.o: src/main.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/src" 
 	@${RM} ${OBJECTDIR}/src/main.o.d 
 	@${RM} ${OBJECTDIR}/src/main.o 
-	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/src/main.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION)  -l\"${OBJECTDIR}/src/main.lst\" -e\"${OBJECTDIR}/src/main.err\" $(ASM_OPTIONS)    -o\"${OBJECTDIR}/src/main.o\" \"src/main.asm\" 
+	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/src/main.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG -d__MPLAB_DEBUGGER_PICKIT2=1 -q -p$(MP_PROCESSOR_OPTION)  -l\"${OBJECTDIR}/src/main.lst\" -e\"${OBJECTDIR}/src/main.err\" $(ASM_OPTIONS)    -o\"${OBJECTDIR}/src/main.o\" \"src/main.asm\" 
 	@${DEP_GEN} -d "${OBJECTDIR}/src/main.o"
 	@${FIXDEPS} "${OBJECTDIR}/src/main.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
+else
 ${OBJECTDIR}/src/isr.o: src/isr.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/src" 
 	@${RM} ${OBJECTDIR}/src/isr.o.d 
@@ -126,6 +126,22 @@ ${OBJECTDIR}/src/isr.o: src/isr.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/src/isr.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION)  -l\"${OBJECTDIR}/src/isr.lst\" -e\"${OBJECTDIR}/src/isr.err\" $(ASM_OPTIONS)    -o\"${OBJECTDIR}/src/isr.o\" \"src/isr.asm\" 
 	@${DEP_GEN} -d "${OBJECTDIR}/src/isr.o"
 	@${FIXDEPS} "${OBJECTDIR}/src/isr.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
+	
+${OBJECTDIR}/src/libtmr2.o: src/libtmr2.asm  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/src" 
+	@${RM} ${OBJECTDIR}/src/libtmr2.o.d 
+	@${RM} ${OBJECTDIR}/src/libtmr2.o 
+	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/src/libtmr2.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION)  -l\"${OBJECTDIR}/src/libtmr2.lst\" -e\"${OBJECTDIR}/src/libtmr2.err\" $(ASM_OPTIONS)    -o\"${OBJECTDIR}/src/libtmr2.o\" \"src/libtmr2.asm\" 
+	@${DEP_GEN} -d "${OBJECTDIR}/src/libtmr2.o"
+	@${FIXDEPS} "${OBJECTDIR}/src/libtmr2.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
+	
+${OBJECTDIR}/src/main.o: src/main.asm  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/src" 
+	@${RM} ${OBJECTDIR}/src/main.o.d 
+	@${RM} ${OBJECTDIR}/src/main.o 
+	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/src/main.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION)  -l\"${OBJECTDIR}/src/main.lst\" -e\"${OBJECTDIR}/src/main.err\" $(ASM_OPTIONS)    -o\"${OBJECTDIR}/src/main.o\" \"src/main.asm\" 
+	@${DEP_GEN} -d "${OBJECTDIR}/src/main.o"
+	@${FIXDEPS} "${OBJECTDIR}/src/main.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
 endif
 

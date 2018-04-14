@@ -22,5 +22,4 @@
 
   ; Es importante que la operación se realice en este orden, por eso, los
   ; paréntesis.
-#define     US_TO_TMR1(US)              ((US*CLOCK_KHZ)/4000)
-#define	    US_TO_PIR2(US, PRE, POS)    ((US*CLOCK_KHZ)/(4000*PRE*POS)-1)
+#define     US_TO_TMR1(US, PRE)         ((US*CLOCK_KHZ)/(4000*PRE))

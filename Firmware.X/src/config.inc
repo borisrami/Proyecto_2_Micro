@@ -14,8 +14,12 @@
 ;                   OTRO TIPO DE ACCIONES EN EL SOFTWARE.
 ;
 ;===-----------------------------------------------------------------------===//
-#define	    CLOCK_KHZ                 18432
-#define	    BAUD_RATE                 115200
+#define     CLOCK_KHZ                 18432
+#define     BAUD_RATE                 115200
+#define     TMR2_US                   1000
+#define     TMR2_PRE                  4
+#define     TMR2_POS                  6
+#define     TMR2_INT
     
     ; Obliga a macros.inc a ser importado después de este archivo.
 #define	    CONFIGURED

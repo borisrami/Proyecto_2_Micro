@@ -18,7 +18,7 @@
   RADIX     DEC
   INCLUDE   "p16f887.inc"
   INCLUDE   "config.inc"
-  INCLUDE   "macros.inc"
+  INCLUDE   "libtmr2.inc"
 ;-----------------------------------------------------------------------------------------------------------------------
 ; config word(s)
 ;-----------------------------------------------------------------------------------------------------------------------
@@ -96,24 +96,16 @@ SETUP:
   MOVWF     OSCCON
   ; Después de retraso del despertar del reloj externo...
 ;-------------------------------------------------------------------------------
+  ; Activar interrupción
+  BANKSEL   INTCON
+  BSF	    INTCON,       GIE
+  BSF	    INTCON,       PEIE
+  ; Configurar TIMER2
+  CALL      TMR2_INIT
   ; -> Configurar TIMER1 como temporizador para el módulo CCP. No se puede usar
   ;    PWM con la frecuencia de diseño (18.432 MHz). Éste está pensado para 
   ;    medir 5uS, que es el dead band más común para la mayoría de servos.
   ;    El valor del TIMER1 se calcula con la macro en "macros.inc"
-  ; Configura TIMER2
-  ; -> Timer: reloj externo/4, prescaler 4, postscaler 6
-  BANKSEL   T2CON
-  MOVLW	    (b'0101'<<TOUTPS0)|(b'1'<<TMR2ON)|(b'01'<<T2CKPS0)
-  MOVWF	    T2CON
-  BANKSEL   PR2
-  MOVLW	    US_TO_PIR2(1000,4,6)
-  MOVWF	    PR2
-  ; -> Activar interrupción para TIMER2
-  BANKSEL   PIE1
-  BSF	    PIE1,         TMR2IE
-  BANKSEL   INTCON
-  BSF	    INTCON,       GIE
-  BSF	    INTCON,       PEIE
   ; Configurar el puerto serial
   ; -> Activa el transmisor asíncrono
   BANKSEL   TXSTA
