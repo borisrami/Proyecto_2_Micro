@@ -7,6 +7,7 @@
       <itemPath>src/config.inc</itemPath>
       <itemPath>src/libtmr2.inc</itemPath>
       <itemPath>src/macros.inc</itemPath>
+      <itemPath>src/ABI.inc</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"

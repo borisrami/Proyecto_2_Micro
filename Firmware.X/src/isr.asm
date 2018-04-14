@@ -20,13 +20,19 @@
   INCLUDE   "config.inc"
   INCLUDE   "libtmr2.inc"
 ;-------------------------------------------------------------------------------
-; external declarations
+; variables for context save
 ;-------------------------------------------------------------------------------
-  EXTERN     FSRSAVE
-  EXTERN     PSAVE
-  EXTERN     SSAVE
-  EXTERN     WSAVE
-  EXTERN     STK00
+  GLOBAL  FSRSAVE
+  GLOBAL  PSAVE
+  GLOBAL  SSAVE
+  GLOBAL  WSAVE
+; Este es un SHAREBANK con UDATA_SHR, esto significa que no hay que hacer
+; BANKSEL para acceder a estos registros
+SHAREBANK   UDATA_SHR
+FSRSAVE     RES     1
+PSAVE       RES     1
+SSAVE       RES     1
+WSAVE       RES     1
 ;-------------------------------------------------------------------------------
 ; global variables
 ;-------------------------------------------------------------------------------
