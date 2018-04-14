@@ -1,4 +1,4 @@
-;===-- config.inc - Proyecto 2: Configuración --------------*- pic8-asm -*-===//
+;===-- macros.inc - Proyecto 2: Macros de MPASM ------------*- pic8-asm -*-===//
 ;
 ;   Proyecto 2 - Microcontroladores aplicados a la industria
 ;
@@ -14,8 +14,13 @@
 ;                   OTRO TIPO DE ACCIONES EN EL SOFTWARE.
 ;
 ;===-----------------------------------------------------------------------===//
-#define	    CLOCK_KHZ                 18432
-#define	    BAUD_RATE                 115200
-    
-    ; Obliga a macros.inc a ser importado después de este archivo.
-#define	    CONFIGURED
+
+#ifndef CONFIGURED
+    error "No se puede proceder sin los símbolos de configuración."
+    error "Es posible que quiera importar su configuración antes que macros.inc"
+#endif
+
+  ; Es importante que la operación se realice en este orden, por eso, los
+  ; paréntesis.
+#define     US_TO_TMR1(US)              ((US*CLOCK_KHZ)/4000)
+#define	    US_TO_PIR2(US, PRE, POS)    ((US*CLOCK_KHZ)/(4000*PRE*POS)-1)

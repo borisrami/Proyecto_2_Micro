@@ -50,44 +50,44 @@ ISR:
   ; Guardar W
   MOVWF     WSAVE
   ; Guardar STATUS
-  SWAPF     STATUS, W
+  SWAPF     STATUS,     W
   CLRF      STATUS
   MOVWF     SSAVE
   ; Guardar PCLATH
-  MOVF      PCLATH, W
+  MOVF      PCLATH,     W
   CLRF      PCLATH
   MOVWF     PSAVE
   ; Guardar FSR
-  MOVF      FSR,    W
+  MOVF      FSR,        W
   BANKSEL   FSRSAVE
   MOVWF     FSRSAVE
 ;--------------------------------------------------------
   BANKSEL   PIR1
-  BTFSC     PIR1,   TMR2IF
+  BTFSC     PIR1,       TMR2IF
   GOTO      SERVICE_TIMER2
-  BTFSC     PIR1,   ADIF
-  GOTO      SERVICE_ADC
+  ;BTFSC     PIR1,       ADIF
+  ;GOTO      SERVICE_ADC
   BANKSEL   INTCON
-  BTFSC     INTCON, RBIF
+  BTFSC     INTCON,     RBIF
   GOTO      SERVICE_RBCHG
   GOTO      INVALID_INTERRUPT
 SERVICE_TIMER2:
-   ; Limpiar la interrupcion
+  ; Limpiar la interrupcion
   BANKSEL   PIR1
-  BCF       PIR1,   TMR2IF
+  BCF       PIR1,       TMR2IF
   GOTO      EXIT_ISR
 SERVICE_RBCHG:
   BANKSEL   INTCON
   ; Realizar una operacion READ del puerto B para quitar la condicion de
   ;     de cambio. Lo movemos a W para evitar el clasico problema RMW
-  MOVF      PORTB,  W
-  BCF       INTCON, RBIF
+  MOVF      PORTB,      W
+  BCF       INTCON,     RBIF
   GOTO      EXIT_ISR
-SERVICE_ADC:
-   ; Limpiar la interrupcion
-  BANKSEL   PIR1
-  BCF       PIR1,   ADIF
-  GOTO      EXIT_ISR
+;SERVICE_ADC:
+  ; Limpiar la interrupcion
+  ;BANKSEL   PIR1
+  ;BCF       PIR1,       ADIF
+  ;GOTO      EXIT_ISR
 INVALID_INTERRUPT:
   ; Esta interrupcion no esta soportada, pero ha ocurrido. En este caso, si no
   ; se borra, entonces el programa se bloquea en la rutina ISR.
@@ -108,15 +108,15 @@ EXIT_ISR:
   MOVF      FSRSAVE,    W
   MOVWF     FSR
   ; Restaurar PCLATH
-  MOVF      PSAVE,  W
+  MOVF      PSAVE,      W
   MOVWF     PCLATH
   ; Restaurar STATUS
   CLRF      STATUS
-  SWAPF     SSAVE,  W
+  SWAPF     SSAVE,      W
   MOVWF     STATUS
   ; Restaurar W
   ; Se hace con dos SWAPF porque SWAPF no modifica las banderas
-  SWAPF     WSAVE,  F
-  SWAPF     WSAVE,  W
+  SWAPF     WSAVE,      F
+  SWAPF     WSAVE,      W
   RETFIE
   END

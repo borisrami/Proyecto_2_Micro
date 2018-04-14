@@ -18,6 +18,7 @@
   RADIX     DEC
   INCLUDE   "p16f887.inc"
   INCLUDE   "config.inc"
+  INCLUDE   "macros.inc"
 ;-----------------------------------------------------------------------------------------------------------------------
 ; config word(s)
 ;-----------------------------------------------------------------------------------------------------------------------
@@ -26,11 +27,11 @@
 ;-----------------------------------------------------------------------------------------------------------------------
 ; global declarations for the ABI
 ;-----------------------------------------------------------------------------------------------------------------------
-  GLOBAL FSRSAVE
-  GLOBAL PSAVE
-  GLOBAL SSAVE
-  GLOBAL WSAVE
-  GLOBAL STK00
+  GLOBAL  FSRSAVE
+  GLOBAL  PSAVE
+  GLOBAL  SSAVE
+  GLOBAL  WSAVE
+  GLOBAL  STK00
 ; Este es un SHAREBANK con UDATA_SHR, esto significa que no hay que hacer BANKSEL para acceder a estos registros
 SHAREBANK   UDATA_SHR
 FSRSAVE     RES     1
@@ -93,28 +94,52 @@ SETUP:
   ; IRCF7, OSTS1, HTS1, LTS1, SCS0
   MOVLW     (b'111'<<IRCF0)|(b'1'<<OSTS)|(b'1'<<HTS)|(b'1'<<LTS)|(b'0'<<SCS)
   MOVWF     OSCCON
+  ; Después de retraso del despertar del reloj externo...
+;-------------------------------------------------------------------------------
+  ; -> Configurar TIMER1 como temporizador para el módulo CCP. No se puede usar
+  ;    PWM con la frecuencia de diseño (18.432 MHz). Éste está pensado para 
+  ;    medir 5uS, que es el dead band más común para la mayoría de servos.
+  ;    El valor del TIMER1 se calcula con la macro en "macros.inc"
+  ; Configura TIMER2
+  ; -> Timer: reloj externo/4, prescaler 4, postscaler 6
+  BANKSEL   T2CON
+  MOVLW	    (b'0101'<<TOUTPS0)|(b'1'<<TMR2ON)|(b'01'<<T2CKPS0)
+  MOVWF	    T2CON
+  BANKSEL   PR2
+  MOVLW	    US_TO_PIR2(1000,4,6)
+  MOVWF	    PR2
+  ; -> Activar interrupción para TIMER2
+  BANKSEL   PIE1
+  BSF	    PIE1,         TMR2IE
+  BANKSEL   INTCON
+  BSF	    INTCON,       GIE
+  BSF	    INTCON,       PEIE
   ; Configurar el puerto serial
   ; -> Activa el transmisor asíncrono
   BANKSEL   TXSTA
-  BSF	    TXSTA,	TXEN
-  BCF	    TXSTA,	SYNC
+  BSF	    TXSTA,        TXEN
+  BCF	    TXSTA,        SYNC
   BANKSEL   RCSTA
-  BSF	    RCSTA,	SPEN
-  ; -> Garantiza el estado de I/O para los pines del puerto serial
-  BANKSEL   TRISC
-  BSF	    TRISC,	RC7	; RX
-  BCF	    TRISC,	RC6	; TX
+  BSF	    RCSTA,        SPEN
   ; -> De acuerdo a 12.1.1.6 de la hoja de datos
   ;   -> Inicializar SPBRGH, SPBRG, BRGH, BRG16
   ;      SYNC=0, BRGH=0, BRG16=1
   BANKSEL   BAUDCTL
-  BSF	    BAUDCTL,	BRG16
+  BSF	    BAUDCTL,      BRG16
   BANKSEL   TXSTA
-  BCF	    TXSTA,	BRGH
+  BCF	    TXSTA,        BRGH
   BANKSEL   SPBRGH
   CLRF	    SPBRGH
   MOVLW	    0x09
   MOVWF	    SPBRG
+  ; -> Activa el receptor asíncrono
+  BANKSEL   RCSTA
+  BSF	    RCSTA,        CREN
+  BCF	    TXSTA,        SYNC
+  ; -> Garantiza el estado de I/O para los pines del puerto serial
+  BANKSEL   TRISC
+  BSF	    TRISC,        RC7   ; RX
+  BCF	    TRISC,        RC6   ; TX
 L1: ; Esta etiqueta es una trampa :3	
   ;BANKSEL   TXSTA
   ;BTFSS	    TXSTA,	TRMT
