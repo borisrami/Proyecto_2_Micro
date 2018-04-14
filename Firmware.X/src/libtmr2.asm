@@ -30,11 +30,24 @@
   INCLUDE   "config.inc"
 #define     TMR2_INTERNAL
   INCLUDE   "libtmr2.inc"
+  INCLUDE   "ABI.inc"
+;-------------------------------------------------------------------------------
+; initialized data
+;-------------------------------------------------------------------------------
+LIBTMR2I         idata
+TICKS_FROM_BOOT
+  DB 0x00, 0x00
+;-------------------------------------------------------------------------------
+; uninitialized data
+;-------------------------------------------------------------------------------
+LIBTMR2U        udata
+FUTURE          res     2
 ;-------------------------------------------------------------------------------
 ; global declarations
 ;-------------------------------------------------------------------------------
   GLOBAL    TMR2_INIT
   GLOBAL    TMR2_ISR
+  GLOBAL    BLOCK_TICKS16
 ;-------------------------------------------------------------------------------
 ; code
 ;-------------------------------------------------------------------------------
@@ -66,10 +79,57 @@ TMR2_INIT:
 #endif
   RETURN
 ;-------------------------------------------------------------------------------
+; WARNING: En código que se ejecuta en el ISR no se deben usar los registros
+; STK de la ABI
 TMR2_ISR    CODE
 TMR2_ISR:
   BANKSEL   PIR1
   BCF       PIR1,       TMR2IF
+  BANKSEL   TICKS_FROM_BOOT
+  INCF      TICKS_FROM_BOOT
+  BTFSC     STATUS,     Z
+  INCF      (TICKS_FROM_BOOT+1),  F
   RETURN
 ;-------------------------------------------------------------------------------
+BLOCK_TICKS16  CODE
+; void block_ticks16( unsigned int x );
+; Bloquea el hilo de ejecución durante x (16 bit) ticks
+BLOCK_TICKS16:
+  PAGESEL     $
+  ; La variable FUTURE es de 16 bits y contiene el valor de TICKS_FROM_BOOT + x
+  BANKSEL     FUTURE
+  MOVWF       FUTURE                          ; FUTUREL = xL
+  MOVF        STK00,      W                   ; W = xH
+  MOVWF       (FUTURE+1)                      ; FUTUREH = xH
+  MOVF        FUTURE,     W                   ; W = FUTUREL
+  ; Suma de 16 bits
+  BANKSEL     TICKS_FROM_BOOT
+  ADDWF       TICKS_FROM_BOOT,  W             ; W = TICKS_FROM_BOOTL + FUTUREL
+  BANKSEL     FUTURE                      
+  MOVWF       FUTURE                          ; FUTUREL = W
+  BANKSEL     TICKS_FROM_BOOT
+  MOVF        (TICKS_FROM_BOOT+1),  W
+  BTFSC       STATUS,   C
+  INCF        (TICKS_FROM_BOOT+1),  W
+  BTFSC       STATUS,   Z
+  GOTO        L1
+  BANKSEL     FUTURE
+  ADDWF       (FUTURE+1)
+  ; Loop bloqueado
+L1:
+  BANKSEL     FUTURE
+  MOVF        (FUTURE+1),   W
+  BANKSEL     TICKS_FROM_BOOT
+  SUBWF       (TICKS_FROM_BOOT+1),  W
+  BTFSS       STATUS,   Z
+  GOTO        L2
+  BANKSEL     FUTURE
+  MOVF        FUTURE,   W
+  BANKSEL     TICKS_FROM_BOOT
+  SUBWF       TICKS_FROM_BOOT,  W
+  ; Salta la comprobación del segundo byte
+L2:
+  BTFSS       STATUS,   C
+  GOTO        L1
+  RETURN
   END

@@ -34,9 +34,20 @@
 ;-------------------------------------------------------------------------------
   EXTERN     TMR2_INIT
   EXTERN     TMR2_ISR
+  EXTERN     BLOCK_TICKS16
 ;-------------------------------------------------------------------------------
 #endif
 
 #define   PIR2_VAL  ((TMR2_US*CLOCK_KHZ)/(4000*TMR2_PRE*TMR2_POS)-1)
+BLOCK_MS  macro   mS
+  local ticks, ticksL, ticksH
+ticks set (mS*1000)/TMR2_US
+ticksL set (ticks & 0xFF)
+ticksH set ((ticks>>8) & 0xFF)
+  MOVLW ticksH
+  MOVWF STK00
+  MOVLW ticksL
+  CALL BLOCK_TICKS16
+  endm
 #endif
     

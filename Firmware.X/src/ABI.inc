@@ -37,6 +37,7 @@
   GLOBAL  STK06
   GLOBAL  STK07
   GLOBAL  STK08
+  GLOBAL  STK09
   GLOBAL  STK10
   GLOBAL  STK11
 ;-------------------------------------------------------------------------------

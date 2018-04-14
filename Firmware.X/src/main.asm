@@ -89,6 +89,12 @@ SETUP:
   BSF	    INTCON,       PEIE
   ; Configurar TIMER2
   CALL      TMR2_INIT
+  PAGESEL   $
+  ; Esperar 1 segundo (para estabilidad)
+  BLOCK_MS  1000
+  PAGESEL   $
+  ; Esperar 1 segundo (para estabilidad)
+  BLOCK_MS  1000
   ; -> Configurar TIMER1 como temporizador para el módulo CCP. No se puede usar
   ;    PWM con la frecuencia de diseño (18.432 MHz). Éste está pensado para 
   ;    medir 5uS, que es el dead band más común para la mayoría de servos.
