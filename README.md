@@ -217,7 +217,7 @@ OPCODE(0)
 
 ### Sintaxis de la trama de estado del dispositivo esclavo
 
-En esta sección se describe el protocolo que determina la forma de enviar un estado desde el dispositivo esclavo al dispositivo maestro.
+Esta sintaxis define la forma y el orden en el cual el dispositivo esclavo debe enviar estados al dispositivo esclavo, optimizando la consistencia por sobre la velocidad, simplicidad o espacio. Este protocolo tiene por nombre *ORPS-01*.
 
 #### Paquete de inicio
 

@@ -17,6 +17,7 @@
   LIST      p=16f887
   RADIX     DEC
   INCLUDE   "p16f887.inc"
+  INCLUDE   "config.inc"
 ;-----------------------------------------------------------------------------------------------------------------------
 ; config word(s)
 ;-----------------------------------------------------------------------------------------------------------------------
@@ -88,11 +89,37 @@ SETUP       CODE
 SETUP:
   ; La verdadera configuración ocurre aquí
   BANKSEL   OSCCON
-  ; OSCCON para 18.432 MHz desde el reloj externo
+  ; OSCCON para reloj externo
   ; IRCF7, OSTS1, HTS1, LTS1, SCS0
   MOVLW     (b'111'<<IRCF0)|(b'1'<<OSTS)|(b'1'<<HTS)|(b'1'<<LTS)|(b'0'<<SCS)
   MOVWF     OSCCON
-  ; No se pueden obtener 20.000 mS exactos con esta configuración. El 
-L1: ; Esta etiqueta es una trampa :3
-  GOTO      L1
+  ; Configurar el puerto serial
+  ; -> Activa el transmisor asíncrono
+  BANKSEL   TXSTA
+  BSF	    TXSTA,	TXEN
+  BCF	    TXSTA,	SYNC
+  BANKSEL   RCSTA
+  BSF	    RCSTA,	SPEN
+  ; -> Garantiza el estado de I/O para los pines del puerto serial
+  BANKSEL   TRISC
+  BSF	    TRISC,	RC7	; RX
+  BCF	    TRISC,	RC6	; TX
+  ; -> De acuerdo a 12.1.1.6 de la hoja de datos
+  ;   -> Inicializar SPBRGH, SPBRG, BRGH, BRG16
+  ;      SYNC=0, BRGH=0, BRG16=1
+  BANKSEL   BAUDCTL
+  BSF	    BAUDCTL,	BRG16
+  BANKSEL   TXSTA
+  BCF	    TXSTA,	BRGH
+  BANKSEL   SPBRGH
+  CLRF	    SPBRGH
+  MOVLW	    0x09
+  MOVWF	    SPBRG
+L1: ; Esta etiqueta es una trampa :3	
+  ;BANKSEL   TXSTA
+  ;BTFSS	    TXSTA,	TRMT
+  GOTO	    L1
+  ;BANKSEL   TXREG
+  ;MOVLW	    0x41
+  ;MOVWF	    TXREG
   END
