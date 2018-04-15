@@ -19,6 +19,7 @@
   INCLUDE   "p16f887.inc"
   INCLUDE   "config.inc"
   INCLUDE   "libtmr2.inc"
+  INCLUDE   "libtmr1.inc"
 #define     ABI_BUILDER
   INCLUDE   "ABI.inc"
 ;-------------------------------------------------------------------------------
@@ -93,12 +94,14 @@ SETUP:
   ; Esperar 1 segundo (para estabilidad)
   BLOCK_MS  1000
   PAGESEL   $
-  ; Esperar 1 segundo (para estabilidad)
-  BLOCK_MS  1000
   ; -> Configurar TIMER1 como temporizador para el módulo CCP. No se puede usar
-  ;    PWM con la frecuencia de diseño (18.432 MHz). Éste está pensado para 
-  ;    medir 5uS, que es el dead band más común para la mayoría de servos.
-  ;    El valor del TIMER1 se calcula con la macro en "macros.inc"
+  ;    PWM con la frecuencia de diseño (18.432 MHz). El Timer1 no será el
+  ;    responsable de la interrupción, se configura solamente para el módulo CCP
+  BANKSEL   T1CON
+  BCF       T1CON,        TMR1GE ; Cuenta siempre
+  BCF       T1CON,        TMR1CS ; FOSC/4
+  CALL      TMR1_INIT
+  PAGESEL   $
   ; Configurar el puerto serial
   ; -> Activa el transmisor asíncrono
   BANKSEL   TXSTA

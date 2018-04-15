@@ -1,6 +1,6 @@
-;===-- libtmr2.inc - In-Source Libary: Timer2 API ----------*- pic8-asm -*-===//
+;===-- libtmr1.inc - In-Source Libary: Timer1 API ----------*- pic8-asm -*-===//
 ;
-;   In-Source Library - Biblioteca no binaria para Timer2
+;   In-Source Library - Biblioteca no binaria para Timer1
 ;
 ;   Copyright (c) 2018 Oever González
 ;   Disponible bajo la licencia MIT
@@ -24,30 +24,15 @@
 ;  EN UN LITIGIO, AGRAVIO O DE OTRO MODO, RESULTANTES DE O EN CONEXIÓN CON EL
 ;           SOFTWARE, SU USO U OTRO TIPO DE ACCIONES EN EL SOFTWARE.
 ;===-----------------------------------------------------------------------===//
-
+                                              
 #ifndef   CONFIGURED
     error "Not configured!"
 #else
-#ifndef   TMR2_INTERNAL
+#ifndef   TMR1_INTERNAL
 ;-------------------------------------------------------------------------------
 ; external declarations
 ;-------------------------------------------------------------------------------
-  EXTERN     TMR2_INIT
-  EXTERN     TMR2_ISR
-  EXTERN     BLOCK_TICKS16
+  EXTERN     TMR1_INIT
 ;-------------------------------------------------------------------------------
 #endif
-
-#define   PIR2_VAL      ((TMR2_TICK_US*CLOCK_KHZ)/(4000*TMR2_PRESCAL*TMR2_POSTSCAL)-1)
-BLOCK_MS  macro   mS
-  local ticks, ticksL, ticksH
-ticks set (mS*1000)/TMR2_TICK_US
-ticksL set (ticks & 0xFF)
-ticksH set (ticks>>8)
-  MOVLW ticksH
-  MOVWF STK00
-  MOVLW ticksL
-  CALL BLOCK_TICKS16
-  endm
 #endif    ;   CONFIGURED
-    

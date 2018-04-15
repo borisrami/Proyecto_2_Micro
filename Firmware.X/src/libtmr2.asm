@@ -56,14 +56,14 @@ TMR2_INIT:
   PAGESEL   $
   ; Configura TIMER2
   BANKSEL   T2CON
-#if         TMR2_PRE == 1
-  MOVLW	    ((TMR2_POS-1)<<TOUTPS0)|(b'1'<<TMR2ON)|(b'00'<<T2CKPS0)
+#if         TMR2_PRESCAL == 1
+  MOVLW	    ((TMR2_POSTSCAL-1)<<TOUTPS0)|(b'1'<<TMR2ON)|(b'00'<<T2CKPS0)
 #else
-#if         TMR2_PRE == 4
-  MOVLW	    ((TMR2_POS-1)<<TOUTPS0)|(b'1'<<TMR2ON)|(b'01'<<T2CKPS0)
+#if         TMR2_PRESCAL == 4
+  MOVLW	    ((TMR2_POSTSCAL-1)<<TOUTPS0)|(b'1'<<TMR2ON)|(b'01'<<T2CKPS0)
 #else
-#if         TMR2_PRE == 16
-  MOVLW	    ((TMR2_POS-1)<<TOUTPS0)|(b'1'<<TMR2ON)|(b'10'<<T2CKPS0)
+#if         TMR2_PRESCAL == 16
+  MOVLW	    ((TMR2_POSTSCAL-1)<<TOUTPS0)|(b'1'<<TMR2ON)|(b'10'<<T2CKPS0)
 #else
   error "Invalid prescaler for TIMER2"
 #endif
@@ -73,7 +73,7 @@ TMR2_INIT:
   BANKSEL   PR2
   MOVLW	    PIR2_VAL
   MOVWF	    PR2
-#ifdef      TMR2_INT
+#ifdef      TMR2_INTERRUPT
   ; -> Activar interrupción para TIMER2
   BSF	    PIE1,         TMR2IE
 #endif

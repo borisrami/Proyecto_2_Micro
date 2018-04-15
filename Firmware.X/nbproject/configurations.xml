@@ -8,6 +8,7 @@
       <itemPath>src/libtmr2.inc</itemPath>
       <itemPath>src/macros.inc</itemPath>
       <itemPath>src/ABI.inc</itemPath>
+      <itemPath>src/libtmr1.inc</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -19,6 +20,7 @@
       <itemPath>src/isr.asm</itemPath>
       <itemPath>src/libtmr2.asm</itemPath>
       <itemPath>src/main.asm</itemPath>
+      <itemPath>src/libtmr1.asm</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

@@ -19,7 +19,3 @@
     error "No se puede proceder sin los símbolos de configuración."
     error "Es posible que quiera importar su configuración antes que macros.inc"
 #endif
-
-  ; Es importante que la operación se realice en este orden, por eso, los
-  ; paréntesis.
-#define     US_TO_TMR1(US, PRE)         ((US*CLOCK_KHZ)/(4000*PRE))

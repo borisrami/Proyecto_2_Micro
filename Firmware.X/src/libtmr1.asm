@@ -1,4 +1,4 @@
-;===-- libtmr2.inc - In-Source Libary: Timer2 API ----------*- pic8-asm -*-===//
+;===-- libtmr2.asm - In-Source Libary: Timer2 --------------*- pic8-asm -*-===//
 ;
 ;   In-Source Library - Biblioteca no binaria para Timer2
 ;
@@ -24,30 +24,58 @@
 ;  EN UN LITIGIO, AGRAVIO O DE OTRO MODO, RESULTANTES DE O EN CONEXIÓN CON EL
 ;           SOFTWARE, SU USO U OTRO TIPO DE ACCIONES EN EL SOFTWARE.
 ;===-----------------------------------------------------------------------===//
-
-#ifndef   CONFIGURED
-    error "Not configured!"
+  LIST      p=16f887
+  RADIX     DEC
+  INCLUDE   "p16f887.inc"
+  INCLUDE   "config.inc"
+#define     TMR1_INTERNAL
+  INCLUDE   "libtmr1.inc"
+;-------------------------------------------------------------------------------
+; global declarations
+;-------------------------------------------------------------------------------
+  GLOBAL    TMR1_INIT
+;-------------------------------------------------------------------------------
+; code
+;-------------------------------------------------------------------------------
+TMR1_INIT   CODE
+TMR1_INIT:
+  PAGESEL   $
+  BANKSEL   TMR1L
+  CLRF      TMR1L
+  CLRF      TMR1H
+  BANKSEL   T1CON
+  MOVLW	    (1<<T1GINV)|(1<<TMR1GE)|(1<<T1OSCEN)|(1<<T1SYNC)|(1<<TMR1CS)
+  ANDWF     T1CON
+#if         TMR1_PRESCAL == 1
+  MOVLW	    (b'00'<<T1CKPS0)|(1<<TMR1ON)
 #else
-#ifndef   TMR2_INTERNAL
-;-------------------------------------------------------------------------------
-; external declarations
-;-------------------------------------------------------------------------------
-  EXTERN     TMR2_INIT
-  EXTERN     TMR2_ISR
-  EXTERN     BLOCK_TICKS16
-;-------------------------------------------------------------------------------
+#if         TMR1_PRESCAL == 2
+  MOVLW	    (b'01'<<T1CKPS0)|(1<<TMR1ON)
+#else
+#if         TMR1_PRESCAL == 4
+  MOVLW	    (b'10'<<T1CKPS0)|(1<<TMR1ON)
+#else
+#if         TMR1_PRESCAL == 8
+  MOVLW	    (b'11'<<T1CKPS0)|(1<<TMR1ON)
+#else
+  error "Invalid prescaler for TIMER1"
 #endif
-
-#define   PIR2_VAL      ((TMR2_TICK_US*CLOCK_KHZ)/(4000*TMR2_PRESCAL*TMR2_POSTSCAL)-1)
-BLOCK_MS  macro   mS
-  local ticks, ticksL, ticksH
-ticks set (mS*1000)/TMR2_TICK_US
-ticksL set (ticks & 0xFF)
-ticksH set (ticks>>8)
-  MOVLW ticksH
-  MOVWF STK00
-  MOVLW ticksL
-  CALL BLOCK_TICKS16
-  endm
-#endif    ;   CONFIGURED
-    
+#endif
+#endif
+#endif
+  IORWF     T1CON
+#ifdef      TMR2_INTERRUPT
+  ; -> Activar interrupción para TIMER1
+  BSF	    PIE1,         TMR1IE
+#endif
+  RETURN
+;-------------------------------------------------------------------------------
+; WARNING: En código que se ejecuta en el ISR no se deben usar los registros
+; STK de la ABI
+TMR2_ISR    CODE
+TMR2_ISR:
+  BANKSEL   PIR1
+  BCF       PIR1,       TMR1IF
+  RETURN
+  END
+  
