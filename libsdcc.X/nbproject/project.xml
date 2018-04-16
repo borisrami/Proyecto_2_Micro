@@ -3,17 +3,15 @@
     <type>com.microchip.mplab.nbide.embedded.makeproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
-            <name>Firmware</name>
-            <creation-uuid>df7480d9-dae1-425a-b379-56fb250f8c82</creation-uuid>
+            <name>libsdcc</name>
+            <creation-uuid>937c06c2-e712-4c8b-b15b-f7f89e941c4f</creation-uuid>
             <make-project-type>0</make-project-type>
             <c-extensions/>
             <cpp-extensions/>
             <header-extensions/>
-            <asminc-extensions>inc</asminc-extensions>
+            <asminc-extensions/>
             <sourceEncoding>UTF-8</sourceEncoding>
-            <make-dep-projects>
-                <make-dep-project>../libsdcc.X</make-dep-project>
-            </make-dep-projects>
+            <make-dep-projects/>
         </data>
     </configuration>
 </project>

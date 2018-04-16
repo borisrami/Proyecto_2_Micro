@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=src/isr.asm src/libtmr2.asm src/main.asm src/libtmr1.asm src/slave_recive.asm
+SOURCEFILES_QUOTED_IF_SPACED=src/slave_recive.asm src/isr.asm src/libtmr2.asm src/main.asm src/libtmr1.asm
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/src/isr.o ${OBJECTDIR}/src/libtmr2.o ${OBJECTDIR}/src/main.o ${OBJECTDIR}/src/libtmr1.o ${OBJECTDIR}/src/slave_recive.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/src/isr.o.d ${OBJECTDIR}/src/libtmr2.o.d ${OBJECTDIR}/src/main.o.d ${OBJECTDIR}/src/libtmr1.o.d ${OBJECTDIR}/src/slave_recive.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/src/slave_recive.o ${OBJECTDIR}/src/isr.o ${OBJECTDIR}/src/libtmr2.o ${OBJECTDIR}/src/main.o ${OBJECTDIR}/src/libtmr1.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/src/slave_recive.o.d ${OBJECTDIR}/src/isr.o.d ${OBJECTDIR}/src/libtmr2.o.d ${OBJECTDIR}/src/main.o.d ${OBJECTDIR}/src/libtmr1.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/src/isr.o ${OBJECTDIR}/src/libtmr2.o ${OBJECTDIR}/src/main.o ${OBJECTDIR}/src/libtmr1.o ${OBJECTDIR}/src/slave_recive.o
+OBJECTFILES=${OBJECTDIR}/src/slave_recive.o ${OBJECTDIR}/src/isr.o ${OBJECTDIR}/src/libtmr2.o ${OBJECTDIR}/src/main.o ${OBJECTDIR}/src/libtmr1.o
 
 # Source Files
-SOURCEFILES=src/isr.asm src/libtmr2.asm src/main.asm src/libtmr1.asm src/slave_recive.asm
+SOURCEFILES=src/slave_recive.asm src/isr.asm src/libtmr2.asm src/main.asm src/libtmr1.asm
 
 
 CFLAGS=
@@ -94,6 +94,14 @@ MP_LINKER_DEBUG_OPTION=-r=ROM@0x1F00:0x1FFE -r=RAM@SHARE:0x70:0x70 -r=RAM@SHARE:
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: assemble
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
+${OBJECTDIR}/src/slave_recive.o: src/slave_recive.asm  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/src" 
+	@${RM} ${OBJECTDIR}/src/slave_recive.o.d 
+	@${RM} ${OBJECTDIR}/src/slave_recive.o 
+	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/src/slave_recive.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG -d__MPLAB_DEBUGGER_PICKIT2=1 -q -p$(MP_PROCESSOR_OPTION)  -l\"${OBJECTDIR}/src/slave_recive.lst\" -e\"${OBJECTDIR}/src/slave_recive.err\" $(ASM_OPTIONS)    -o\"${OBJECTDIR}/src/slave_recive.o\" \"src/slave_recive.asm\" 
+	@${DEP_GEN} -d "${OBJECTDIR}/src/slave_recive.o"
+	@${FIXDEPS} "${OBJECTDIR}/src/slave_recive.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
+	
 ${OBJECTDIR}/src/isr.o: src/isr.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/src" 
 	@${RM} ${OBJECTDIR}/src/isr.o.d 
@@ -126,15 +134,15 @@ ${OBJECTDIR}/src/libtmr1.o: src/libtmr1.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${DEP_GEN} -d "${OBJECTDIR}/src/libtmr1.o"
 	@${FIXDEPS} "${OBJECTDIR}/src/libtmr1.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
+else
 ${OBJECTDIR}/src/slave_recive.o: src/slave_recive.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/src" 
 	@${RM} ${OBJECTDIR}/src/slave_recive.o.d 
 	@${RM} ${OBJECTDIR}/src/slave_recive.o 
-	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/src/slave_recive.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG -d__MPLAB_DEBUGGER_PICKIT2=1 -q -p$(MP_PROCESSOR_OPTION)  -l\"${OBJECTDIR}/src/slave_recive.lst\" -e\"${OBJECTDIR}/src/slave_recive.err\" $(ASM_OPTIONS)    -o\"${OBJECTDIR}/src/slave_recive.o\" \"src/slave_recive.asm\" 
+	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/src/slave_recive.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION)  -l\"${OBJECTDIR}/src/slave_recive.lst\" -e\"${OBJECTDIR}/src/slave_recive.err\" $(ASM_OPTIONS)    -o\"${OBJECTDIR}/src/slave_recive.o\" \"src/slave_recive.asm\" 
 	@${DEP_GEN} -d "${OBJECTDIR}/src/slave_recive.o"
 	@${FIXDEPS} "${OBJECTDIR}/src/slave_recive.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
-else
 ${OBJECTDIR}/src/isr.o: src/isr.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/src" 
 	@${RM} ${OBJECTDIR}/src/isr.o.d 
@@ -167,35 +175,29 @@ ${OBJECTDIR}/src/libtmr1.o: src/libtmr1.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${DEP_GEN} -d "${OBJECTDIR}/src/libtmr1.o"
 	@${FIXDEPS} "${OBJECTDIR}/src/libtmr1.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
-${OBJECTDIR}/src/slave_recive.o: src/slave_recive.asm  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src" 
-	@${RM} ${OBJECTDIR}/src/slave_recive.o.d 
-	@${RM} ${OBJECTDIR}/src/slave_recive.o 
-	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/src/slave_recive.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION)  -l\"${OBJECTDIR}/src/slave_recive.lst\" -e\"${OBJECTDIR}/src/slave_recive.err\" $(ASM_OPTIONS)    -o\"${OBJECTDIR}/src/slave_recive.o\" \"src/slave_recive.asm\" 
-	@${DEP_GEN} -d "${OBJECTDIR}/src/slave_recive.o"
-	@${FIXDEPS} "${OBJECTDIR}/src/slave_recive.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
-	
 endif
 
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: link
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
-dist/${CND_CONF}/${IMAGE_TYPE}/Firmware.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk    
+dist/${CND_CONF}/${IMAGE_TYPE}/Firmware.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk  ../libsdcc.X/dist/default/debug/libsdcc.X.lib  
 	@${MKDIR} dist/${CND_CONF}/${IMAGE_TYPE} 
-	${MP_LD} $(MP_EXTRA_LD_PRE)   -p$(MP_PROCESSOR_OPTION)  -w -x -u_DEBUG -z__ICD2RAM=1 -m"${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map" -i   -z__MPLAB_BUILD=1  -z__MPLAB_DEBUG=1 -z__MPLAB_DEBUGGER_PICKIT2=1 $(MP_LINKER_DEBUG_OPTION) -odist/${CND_CONF}/${IMAGE_TYPE}/Firmware.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}      -i
+	${MP_LD} $(MP_EXTRA_LD_PRE)   -p$(MP_PROCESSOR_OPTION)  -w -x -u_DEBUG -z__ICD2RAM=1 -m"${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map" -i   -z__MPLAB_BUILD=1  -z__MPLAB_DEBUG=1 -z__MPLAB_DEBUGGER_PICKIT2=1 $(MP_LINKER_DEBUG_OPTION) -odist/${CND_CONF}/${IMAGE_TYPE}/Firmware.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}   ..\libsdcc.X\dist\default\debug\libsdcc.X.lib   -i
 else
-dist/${CND_CONF}/${IMAGE_TYPE}/Firmware.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk   
+dist/${CND_CONF}/${IMAGE_TYPE}/Firmware.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk  ../libsdcc.X/dist/default/production/libsdcc.X.lib 
 	@${MKDIR} dist/${CND_CONF}/${IMAGE_TYPE} 
-	${MP_LD} $(MP_EXTRA_LD_PRE)   -p$(MP_PROCESSOR_OPTION)  -w  -m"${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map" -i   -z__MPLAB_BUILD=1  -odist/${CND_CONF}/${IMAGE_TYPE}/Firmware.X.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}      -i
+	${MP_LD} $(MP_EXTRA_LD_PRE)   -p$(MP_PROCESSOR_OPTION)  -w  -m"${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map" -i   -z__MPLAB_BUILD=1  -odist/${CND_CONF}/${IMAGE_TYPE}/Firmware.X.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}   ..\libsdcc.X\dist\default\production\libsdcc.X.lib   -i
 endif
 
 
 # Subprojects
 .build-subprojects:
+	cd /D ../libsdcc.X && ${MAKE}  -f Makefile CONF=default
 
 
 # Subprojects
 .clean-subprojects:
+	cd /D ../libsdcc.X && rm -rf "build/default" "dist/default"
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}

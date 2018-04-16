@@ -100,6 +100,7 @@ disassembly/
 *.dep
 *.lk
 *.cod
+*.lib
 ### Windows ###
 # Windows thumbnail cache files
 Thumbs.db
@@ -122,4 +123,3 @@ $RECYCLE.BIN/
 
 
 # End of https://www.gitignore.io/api/kate,sdcc,macos,linux,cmake,mplabx,windows
-

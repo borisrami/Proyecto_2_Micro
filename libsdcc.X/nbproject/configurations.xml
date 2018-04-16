@@ -4,11 +4,6 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>src/config.inc</itemPath>
-      <itemPath>src/libtmr2.inc</itemPath>
-      <itemPath>src/ABI.inc</itemPath>
-      <itemPath>src/libtmr1.inc</itemPath>
-      <itemPath>src/slave_recive.asm</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -17,23 +12,18 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>src/isr.asm</itemPath>
-      <itemPath>src/libtmr2.asm</itemPath>
-      <itemPath>src/main.asm</itemPath>
-      <itemPath>src/libtmr1.asm</itemPath>
+      <itemPath>src/_cmuli.asm</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
                    projectFiles="false">
       <itemPath>Makefile</itemPath>
+      <itemPath>../Firmware.X/src/_cmuli.c</itemPath>
     </logicalFolder>
   </logicalFolder>
-  <sourceRootList>
-    <Elem>src</Elem>
-  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
-    <conf name="default" type="2">
+    <conf name="default" type="3">
       <toolsSet>
         <developmentServer>localhost</developmentServer>
         <targetDevice>PIC16F887</targetDevice>
@@ -47,30 +37,13 @@
       <compileType>
         <linkerTool>
           <linkerLibItems>
-            <linkerLibProjectItem>
-              <makeArtifact PL="../libsdcc.X"
-                            CT="3"
-                            CN="default"
-                            AC="true"
-                            BL="true"
-                            WD="../libsdcc.X"
-                            BC="${MAKE}  -f Makefile CONF=default"
-                            DBC="${MAKE}  -f Makefile CONF=default TYPE_IMAGE=DEBUG_RUN"
-                            CC="rm -rf &quot;build/default&quot; &quot;dist/default&quot;"
-                            OP="dist/default/production/libsdcc.X.lib"
-                            DOP="dist/default/debug/libsdcc.X.lib"
-                            FL="dist/default/production/libsdcc.X.lib"
-                            PD="dist/default/production/libsdcc.X."
-                            DD="dist/default/debug/libsdcc.X.">
-              </makeArtifact>
-            </linkerLibProjectItem>
           </linkerLibItems>
         </linkerTool>
         <archiverTool>
         </archiverTool>
         <loading>
           <useAlternateLoadableFile>false</useAlternateLoadableFile>
-          <parseOnProdLoad>true</parseOnProdLoad>
+          <parseOnProdLoad>false</parseOnProdLoad>
           <alternateLoadableFile></alternateLoadableFile>
         </loading>
         <subordinates>
@@ -93,20 +66,6 @@
         <property key="preprocessor.macros" value=""/>
         <property key="warning.level" value="0"/>
       </MPASMWIN-AS>
-      <MPASMWIN-LD>
-        <property key="cod-file" value="false"/>
-        <property key="extra-lib-directories" value=""/>
-        <property key="hex-output-format" value="INHX32"/>
-        <property key="map-file" value="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map"/>
-        <appendMe value="-i"/>
-      </MPASMWIN-LD>
-      <PICkit2PlatformTool>
-        <property key="pk2settings.3state" value="false"/>
-        <property key="pk2settings.preserveee" value="false"/>
-        <property key="pk2settings.setvddvoltage" value=""/>
-        <property key="pk2settings.userpgmexec" value="true"/>
-        <property key="pk2settings.usetargetpower" value="false"/>
-      </PICkit2PlatformTool>
       <mpasmsuite>
         <property key="absolute-mode" value="false"/>
         <property key="eeprom-width" value="8"/>

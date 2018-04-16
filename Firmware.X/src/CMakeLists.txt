@@ -27,7 +27,9 @@
 
 # Here you put all your files and executables. You can use this folder as template for more executables.
 # You should have at least minimum knowledge about CMake, so you can customize your build.
-ADD_EXECUTABLE ( firmware isr.asm main.asm )
+#ADD_EXECUTABLE ( firmware main.c )
+ADD_LIBRARY ( sdcc-stripped STATIC _cmuli.c )
 
 # You can "install" your .hex so it's easy to find.
-INSTALL ( TARGETS firmware DESTINATION hex )
+#INSTALL ( TARGETS firmware DESTINATION hex )
+INSTALL ( TARGETS sdcc-stripped DESTINATION lib )

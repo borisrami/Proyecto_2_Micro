@@ -26,9 +26,12 @@ CURR_CHAR
 ;-------------------------------------------------------------------------------
 ; uninitialized data
 ;-------------------------------------------------------------------------------
-SLVRCIU      udata
-CHRBF        RES      1
-CMDBUF       RES      1+3   ; 1 para opcode, 3 para los argumentos máximo
+SLVRCIU       udata
+CHRBF         RES       1
+OPCODE        RES       1
+ARGS          RES       1
+ARGN          RES       1
+ARRGS         RES       3   ; 1 para opcode, 3 para los argumentos máximo
 ;-------------------------------------------------------------------------------
 ; global declarations
 ;-------------------------------------------------------------------------------
@@ -56,14 +59,30 @@ GETCHAR:
   BTFSC     STATUS,     Z
   GOTO      CHAR0 ; Z = 1
   ; Case (0x01)
+  MOVF      CURR_CHAR,  W
   XORLW     0x01 ; Z = 0
   BTFSC     STATUS,     Z
   GOTO      CHAR1 ; Z = 1
   ; Case (0x02)
+  MOVF      CURR_CHAR,  W
   XORLW     0x02 ; Z = 0
+  BTFSC     STATUS,     Z
+  GOTO      CHROPCODE ; Z = 1
+  ; Case (0x03)
+  MOVF      CURR_CHAR,  W
+  XORLW     0x03 ; Z = 0
+  BTFSC     STATUS,     Z
+  GOTO      CHRARGS ; Z = 1
+  ; Case (0x04)
+  MOVF      CURR_CHAR,  W
+  XORLW     0x04 ; Z = 0
+  BTFSC     STATUS,     Z
+  GOTO      COND_ARGS ; Z = 1
+  ; Default
+  RETURN ; Z = 0
 CHAR0:      ; CHAR0 = 0x44
   BANKSEL   CHRBF
-  MOVF      CHRBF,  W
+  MOVF      CHRBF,      W
   XORLW     0xBB
   BTFSC     STATUS,     Z
   ; Z = 1, el caracter es 0xBB
@@ -72,13 +91,40 @@ CHAR0:      ; CHAR0 = 0x44
   GOTO      CHAR_NVAL
 CHAR1:
   BANKSEL   CHRBF
-  MOVF      CHRBF,  W
+  MOVF      CHRBF,      W
   XORLW     0x44
   BTFSC     STATUS,     Z
   ; Z = 1, el caracter es 0x44
   GOTO      CHAR_VAL
   ; Z = 0, el caracter no es 0x44
   GOTO      CHAR_NVAL
+CHROPCODE:
+  BANKSEL   CHRBF
+  MOVF      CHRBF,      W
+  BANKSEL   OPCODE
+  MOVWF     OPCODE
+  GOTO      CHAR_VAL
+CHRARGS:
+  BANKSEL   CHRBF
+  MOVF      CHRBF,      W
+  BANKSEL   ARGS
+  MOVWF     ARGS
+  GOTO      CHAR_VAL
+COND_ARGS:
+  BANKSEL   ARGS
+  MOVF      ARGS,       W
+  XORLW     0x00
+  BTFSC     STATUS,     Z
+  ; Z = 1, ARGS es 0, saltar a CHKSUM
+  GOTO      CHKSUM
+  ; Z = 0, ARGS no es 0, guardar ARGN
+  BANKSEL   CHRBF
+  MOVF      CHRBF,      W
+  BANKSEL   ARGN
+  MOVWF     ARGN
+  GOTO      CHAR_VAL
+CHKSUM:
+  
 CHAR_NVAL:
   BANKSEL   CURR_CHAR
   CLRF      CURR_CHAR ; Reinicia el curr_char, ¿el efecto?, ignorar el búfer
