@@ -9,6 +9,7 @@
       <itemPath>src/macros.inc</itemPath>
       <itemPath>src/ABI.inc</itemPath>
       <itemPath>src/libtmr1.inc</itemPath>
+      <itemPath>src/slave_recive.asm</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"

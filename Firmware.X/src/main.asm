@@ -30,6 +30,7 @@
 ;-------------------------------------------------------------------------------
 ; external declarations
 ;-------------------------------------------------------------------------------
+ EXTERN     RCV_LOOPER
 ;-------------------------------------------------------------------------------
 ; global variables
 ;-------------------------------------------------------------------------------
@@ -94,14 +95,6 @@ SETUP:
   ; Esperar 1 segundo (para estabilidad)
   BLOCK_MS  1000
   PAGESEL   $
-  ; -> Configurar TIMER1 como temporizador para el módulo CCP. No se puede usar
-  ;    PWM con la frecuencia de diseño (18.432 MHz). El Timer1 no será el
-  ;    responsable de la interrupción, se configura solamente para el módulo CCP
-  BANKSEL   T1CON
-  BCF       T1CON,        TMR1GE ; Cuenta siempre
-  BCF       T1CON,        TMR1CS ; FOSC/4
-  CALL      TMR1_INIT
-  PAGESEL   $
   ; Configurar el puerto serial
   ; -> Activa el transmisor asíncrono
   BANKSEL   TXSTA
@@ -123,16 +116,19 @@ SETUP:
   ; -> Activa el receptor asíncrono
   BANKSEL   RCSTA
   BSF	    RCSTA,        CREN
-  BCF	    TXSTA,        SYNC
   ; -> Garantiza el estado de I/O para los pines del puerto serial
   BANKSEL   TRISC
   BSF	    TRISC,        RC7   ; RX
   BCF	    TRISC,        RC6   ; TX
-L1: ; Esta etiqueta es una trampa :3	
-  ;BANKSEL   TXSTA
-  ;BTFSS	    TXSTA,	TRMT
+  GOTO      BUSY_WAIT
+L1: ; Esta etiqueta es una trampa :3
   GOTO	    L1
-  ;BANKSEL   TXREG
-  ;MOVLW	    0x41
-  ;MOVWF	    TXREG
+  GOTO      L0
+;-------------------------------------------------------------------------------
+BUSY_WAIT   CODE
+BUSY_WAIT:
+  ; BUSY WAIT descarga el trabajo del ISR en una rutina cíclica que polea los
+  ; resultados
+  CALL      RCV_LOOPER
+  GOTO      BUSY_WAIT
   END

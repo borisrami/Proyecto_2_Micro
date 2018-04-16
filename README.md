@@ -196,7 +196,7 @@ OPCODE(ARGS, ARGN, ARGV1 ...  ARGVN)
 OPCODE(0)
 ```
 
-- `0x00`: `ACK(0)`
+- `0x06`: `ACK(0)`
   - Este comando solicita al dispositivo esclavo enviar una secuencia de bits para determinar que la comunicación es correcta.
   - La respuesta de `ACK` no respeta el protocolo del dispositivo esclavo.
   - La secuencia es `0xAA880B16B055`.
