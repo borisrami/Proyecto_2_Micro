@@ -38,7 +38,7 @@ CHRBF         RES       1
 ORPM01_OPCODE RES       1
 ORPM01_ARGS   RES       1
 ORPM01_ARGN   RES       1
-ORPM01_ARRGS  RES       3   ; 1 para opcode, 3 para los argumentos máximo
+ORPM01_ARRGS  RES       3 ; 3 para los argumentos máximo
 FLAGS         RES       1
 FINALIZADO    EQU       0
 ORPM01_FLAGS  RES       1
