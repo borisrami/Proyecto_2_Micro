@@ -21,7 +21,7 @@
 #===---------------------------------------------------------------------------------------------------------------===//
 
 # Las banderas (mínimas) para hacer funcionar nuestro GPASM
-SET ( CMAKE_ASM_FLAGS_INIT "" )
+SET ( CMAKE_ASM_FLAGS_INIT "-p16f887" )
 
 SET ( GPUTILS_MINVER 1.5.2 )
 EXECUTE_PROCESS ( COMMAND ${CMAKE_ASM_COMPILER} -v ERROR_VARIABLE GPUTILS_VER )

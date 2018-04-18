@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=src/slave_recive.asm src/isr.asm src/libtmr2.asm src/main.asm src/libtmr1.asm
+SOURCEFILES_QUOTED_IF_SPACED=src/isr.asm src/libtmr2.asm src/main.asm src/libtmr1.asm src/slave_recive.asm
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/src/slave_recive.o ${OBJECTDIR}/src/isr.o ${OBJECTDIR}/src/libtmr2.o ${OBJECTDIR}/src/main.o ${OBJECTDIR}/src/libtmr1.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/src/slave_recive.o.d ${OBJECTDIR}/src/isr.o.d ${OBJECTDIR}/src/libtmr2.o.d ${OBJECTDIR}/src/main.o.d ${OBJECTDIR}/src/libtmr1.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/src/isr.o ${OBJECTDIR}/src/libtmr2.o ${OBJECTDIR}/src/main.o ${OBJECTDIR}/src/libtmr1.o ${OBJECTDIR}/src/slave_recive.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/src/isr.o.d ${OBJECTDIR}/src/libtmr2.o.d ${OBJECTDIR}/src/main.o.d ${OBJECTDIR}/src/libtmr1.o.d ${OBJECTDIR}/src/slave_recive.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/src/slave_recive.o ${OBJECTDIR}/src/isr.o ${OBJECTDIR}/src/libtmr2.o ${OBJECTDIR}/src/main.o ${OBJECTDIR}/src/libtmr1.o
+OBJECTFILES=${OBJECTDIR}/src/isr.o ${OBJECTDIR}/src/libtmr2.o ${OBJECTDIR}/src/main.o ${OBJECTDIR}/src/libtmr1.o ${OBJECTDIR}/src/slave_recive.o
 
 # Source Files
-SOURCEFILES=src/slave_recive.asm src/isr.asm src/libtmr2.asm src/main.asm src/libtmr1.asm
+SOURCEFILES=src/isr.asm src/libtmr2.asm src/main.asm src/libtmr1.asm src/slave_recive.asm
 
 
 CFLAGS=
@@ -94,14 +94,6 @@ MP_LINKER_DEBUG_OPTION=-r=ROM@0x1F00:0x1FFE -r=RAM@SHARE:0x70:0x70 -r=RAM@SHARE:
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: assemble
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
-${OBJECTDIR}/src/slave_recive.o: src/slave_recive.asm  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/src" 
-	@${RM} ${OBJECTDIR}/src/slave_recive.o.d 
-	@${RM} ${OBJECTDIR}/src/slave_recive.o 
-	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/src/slave_recive.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG -d__MPLAB_DEBUGGER_PICKIT2=1 -q -p$(MP_PROCESSOR_OPTION)  -l\"${OBJECTDIR}/src/slave_recive.lst\" -e\"${OBJECTDIR}/src/slave_recive.err\" $(ASM_OPTIONS)    -o\"${OBJECTDIR}/src/slave_recive.o\" \"src/slave_recive.asm\" 
-	@${DEP_GEN} -d "${OBJECTDIR}/src/slave_recive.o"
-	@${FIXDEPS} "${OBJECTDIR}/src/slave_recive.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
-	
 ${OBJECTDIR}/src/isr.o: src/isr.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/src" 
 	@${RM} ${OBJECTDIR}/src/isr.o.d 
@@ -134,15 +126,15 @@ ${OBJECTDIR}/src/libtmr1.o: src/libtmr1.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${DEP_GEN} -d "${OBJECTDIR}/src/libtmr1.o"
 	@${FIXDEPS} "${OBJECTDIR}/src/libtmr1.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
-else
 ${OBJECTDIR}/src/slave_recive.o: src/slave_recive.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/src" 
 	@${RM} ${OBJECTDIR}/src/slave_recive.o.d 
 	@${RM} ${OBJECTDIR}/src/slave_recive.o 
-	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/src/slave_recive.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION)  -l\"${OBJECTDIR}/src/slave_recive.lst\" -e\"${OBJECTDIR}/src/slave_recive.err\" $(ASM_OPTIONS)    -o\"${OBJECTDIR}/src/slave_recive.o\" \"src/slave_recive.asm\" 
+	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/src/slave_recive.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG -d__MPLAB_DEBUGGER_PICKIT2=1 -q -p$(MP_PROCESSOR_OPTION)  -l\"${OBJECTDIR}/src/slave_recive.lst\" -e\"${OBJECTDIR}/src/slave_recive.err\" $(ASM_OPTIONS)    -o\"${OBJECTDIR}/src/slave_recive.o\" \"src/slave_recive.asm\" 
 	@${DEP_GEN} -d "${OBJECTDIR}/src/slave_recive.o"
 	@${FIXDEPS} "${OBJECTDIR}/src/slave_recive.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
+else
 ${OBJECTDIR}/src/isr.o: src/isr.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/src" 
 	@${RM} ${OBJECTDIR}/src/isr.o.d 
@@ -174,6 +166,14 @@ ${OBJECTDIR}/src/libtmr1.o: src/libtmr1.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/src/libtmr1.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION)  -l\"${OBJECTDIR}/src/libtmr1.lst\" -e\"${OBJECTDIR}/src/libtmr1.err\" $(ASM_OPTIONS)    -o\"${OBJECTDIR}/src/libtmr1.o\" \"src/libtmr1.asm\" 
 	@${DEP_GEN} -d "${OBJECTDIR}/src/libtmr1.o"
 	@${FIXDEPS} "${OBJECTDIR}/src/libtmr1.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
+	
+${OBJECTDIR}/src/slave_recive.o: src/slave_recive.asm  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/src" 
+	@${RM} ${OBJECTDIR}/src/slave_recive.o.d 
+	@${RM} ${OBJECTDIR}/src/slave_recive.o 
+	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/src/slave_recive.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION)  -l\"${OBJECTDIR}/src/slave_recive.lst\" -e\"${OBJECTDIR}/src/slave_recive.err\" $(ASM_OPTIONS)    -o\"${OBJECTDIR}/src/slave_recive.o\" \"src/slave_recive.asm\" 
+	@${DEP_GEN} -d "${OBJECTDIR}/src/slave_recive.o"
+	@${FIXDEPS} "${OBJECTDIR}/src/slave_recive.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
 endif
 

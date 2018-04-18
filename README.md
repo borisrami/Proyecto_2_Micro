@@ -55,7 +55,11 @@ A parte del protocolo UART, y el RS-232, es necesario establecer un protocolo pa
 
 Este protocolo consta de una trama con 3 paquetes, para los dispositivos esclavos y maestros. Soporta enviar comandos o estados con una cantidad arbitraria de argumentos (entre 0x00 y 0xFF) y, cada uno, de una longitud arbitraria de bytes (entre 0x00 y 0xFF).
 
-### Dispositivo maestro
+Los protocolos ORPM-01 y ORPS-01 para la comunicación serial son propiedad intelectual de Oever González y están disponibles bajo la licencia permisiva MIT (también conocida como "la licencia de X11").
+
+### Dispositivo maestro (ORPM-01)
+Copyright (c) 2018 Oever González
+Disponible libremente bajo la licencia MIT
 
 El dispositivo maestro es el conversor USB-RS232. El dispositivo maestro envía instrucciones al dispositivo esclavo, pero nunca al revés. Este dispositivo espera que el esclavo envíe únicamente información del estado y los resultados de las órdenes.
 
@@ -104,7 +108,7 @@ Inmediatamente después de la secuencia de inicio, el dispositivo esclavo está 
   ```
 
   -  Mide exactamente 1 byte.
-  - Cualquier valor mayor a 0 se considera válido.
+  - Cualquier valor mayor 0 igual a 0 se considera válido.
   -  Si el valor es 0, se supone que el comando no tiene argumentos.
 
 - `ARGN`: es el número total de argumentos que acomapañan al comando.
@@ -215,7 +219,9 @@ OPCODE(0)
   - El tiempo por defecto en los dispositivos esclavos es 0x9C4
 
 
-### Sintaxis de la trama de estado del dispositivo esclavo
+### Sintaxis de la trama de estado del dispositivo esclavo (ORPS-01)
+Copyright (c) 2018 Oever González
+Disponible libremente bajo la licencia MIT
 
 Esta sintaxis define la forma y el orden en el cual el dispositivo esclavo debe enviar estados al dispositivo esclavo, optimizando la consistencia por sobre la velocidad, simplicidad o espacio. Este protocolo tiene por nombre *ORPS-01*.
 

@@ -1,4 +1,4 @@
-#===-- src/CMakeLists.txt - Archivo de CMake  ---------------------------------------------------------*- CMake -*-===//
+#===-- lib/CMakeLists.txt - Archivo de CMake  ---------------------------------------------------------*- CMake -*-===//
 #
 # Copyright (c) 2018 Oever González
 #
@@ -28,7 +28,8 @@
 # Here you put all your files and executables. You can use this folder as template for more executables.
 # You should have at least minimum knowledge about CMake, so you can customize your build.
 #ADD_EXECUTABLE ( firmware main.c )
-ADD_LIBRARY ( sdcc-stripped STATIC _cmuli.c )
+ADD_LIBRARY ( sdcc-stripped STATIC _cmuli.c _chksm.c _gptrget1.asm pic16f887.c )
+INCLUDE_DIRECTORIES ( . )
 
 # You can "install" your .hex so it's easy to find.
 #INSTALL ( TARGETS firmware DESTINATION hex )

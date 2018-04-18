@@ -17,6 +17,9 @@
   LIST      p=16f887
   RADIX     DEC
   INCLUDE   "p16f887.inc"
+  INCLUDE   "ABI.inc"
+#define ORPM01_INTERNAL
+  INCLUDE   "slave_recive.inc"
 ;-------------------------------------------------------------------------------
 ; initialized data
 ;-------------------------------------------------------------------------------
@@ -24,27 +27,51 @@ SLVRCI      idata
 CURR_CHAR
   DB 0x00
 ;-------------------------------------------------------------------------------
+; extern declarations
+;-------------------------------------------------------------------------------
+  EXTERN __chksum
+;-------------------------------------------------------------------------------
 ; uninitialized data
 ;-------------------------------------------------------------------------------
 SLVRCIU       udata
 CHRBF         RES       1
-OPCODE        RES       1
-ARGS          RES       1
-ARGN          RES       1
-ARRGS         RES       3   ; 1 para opcode, 3 para los argumentos máximo
+ORPM01_OPCODE RES       1
+ORPM01_ARGS   RES       1
+ORPM01_ARGN   RES       1
+ORPM01_ARRGS  RES       3   ; 1 para opcode, 3 para los argumentos máximo
+FLAGS         RES       1
+FINALIZADO    EQU       0
+ORPM01_FLAGS  RES       1
+CHKSM_IDX     RES       1
 ;-------------------------------------------------------------------------------
 ; global declarations
 ;-------------------------------------------------------------------------------
   GLOBAL    RCV_LOOPER
+  GLOBAL    ORPM01_FLAGS
+  GLOBAL    ORPM01_OPCODE
+  GLOBAL    ORPM01_ARGS
+  GLOBAL    ORPM01_ARGN
+  GLOBAL    ORPM01_ARRGS
 ;-------------------------------------------------------------------------------
 ; code
 ;-------------------------------------------------------------------------------
 RCV_LOOPER  CODE
 RCV_LOOPER:
+  ; Por motivos de que el PIC es muy lento y con pocos recursos, mientras haya
+  ; un comando en ejecución (READY==1), no se podra obtener otro desde el
+  ; serial.
   PAGESEL   $
+  BANKSEL   ORPM01_FLAGS
+  BTFSC     ORPM01_FLAGS, ORPM01_READY
+  GOTO      FLSH_N_RET  ; ORPM01_READY = 1
   BANKSEL   PIR1
   BTFSC     PIR1,       RCIF
   GOTO      GETCHAR ; RCIF = 1
+  RETURN  ; RCIF = 0
+FLSH_N_RET:
+  BANKSEL   PIR1
+  BTFSC     PIR1,       RCIF
+  CALL      FLUSHCHAR ; RCIF = 1
   RETURN  ; RCIF = 0
 GETCHAR:
   CALL      FLUSHCHAR
@@ -78,9 +105,64 @@ GETCHAR:
   XORLW     0x04 ; Z = 0
   BTFSC     STATUS,     Z
   GOTO      COND_ARGS ; Z = 1
+  ; ARGN (o CHKSUM) es el último byte con dirección constante.
+  BANKSEL   FLAGS ; Z = 0
+  BTFSC     FLAGS,      FINALIZADO
+  ; FINALIZADO = 1
+  GOTO      FINALIZE_ENTRY
+  ; FINALIZADO = 0
+  GOTO      CAPTURE_ARGS
   ; Default
-  RETURN ; Z = 0
-CHAR0:      ; CHAR0 = 0x44
+  ;RETURN ; Z = 0
+;...............................................................................
+FINALIZE_ENTRY:
+  BANKSEL   CHKSM_IDX
+  MOVF      CHKSM_IDX,  W
+  MOVWF     STK01
+  INCF      STK01
+  MOVF      STK01,      W
+  MOVWF     STK00
+  MOVF      CURR_CHAR,  W
+  XORWF     STK00
+  MOVF      STK00,      W
+  BTFSC     STATUS,     Z
+  GOTO      CHREXIT0 ; Z = 1
+  INCF      STK01    ; Z = 0
+  MOVF      STK01,      W
+  MOVWF     STK00
+  MOVF      CURR_CHAR,  W
+  XORWF     STK00
+  MOVF      STK00,      W
+  BTFSC     STATUS,     Z
+  GOTO      CHREXIT1 ; Z = 1
+CAPTURE_ARGS:
+  RETURN
+;...............................................................................
+CHREXIT0:       ; CHAR = 0xAA
+  BANKSEL   CHRBF
+  MOVF      CHRBF,      W
+  XORLW     0xAA
+  BTFSC     STATUS,     Z
+  ; Z = 1, el caracter es 0xAA
+  GOTO      CHAR_VAL
+  ; Z = 0, el caracter no es 0xAA
+  GOTO      CHAR_NVAL
+CHREXIT1:       ; CHAR = 0x55
+  BANKSEL   CHRBF
+  MOVF      CHRBF,      W
+  XORLW     0x55
+  BTFSS     STATUS,     Z
+  ; Z = 0, el caracter no es 0x55
+  GOTO      CHAR_NVAL
+  ; Z = 1, el caracter es 0x55
+  ; -> Elevar la bandera READY
+  BANKSEL   ORPM01_FLAGS
+  BSF       ORPM01_FLAGS,   ORPM01_READY
+  ; -> Reiniciar el contador
+  BANKSEL   CURR_CHAR
+  CLRF      CURR_CHAR
+  RETURN
+CHAR0:          ; CHAR = 0xBB
   BANKSEL   CHRBF
   MOVF      CHRBF,      W
   XORLW     0xBB
@@ -89,7 +171,7 @@ CHAR0:      ; CHAR0 = 0x44
   GOTO      CHAR_VAL
   ; Z = 0, el caracter no es 0xBB
   GOTO      CHAR_NVAL
-CHAR1:
+CHAR1:          ; CHAR = 0x44
   BANKSEL   CHRBF
   MOVF      CHRBF,      W
   XORLW     0x44
@@ -98,21 +180,25 @@ CHAR1:
   GOTO      CHAR_VAL
   ; Z = 0, el caracter no es 0x44
   GOTO      CHAR_NVAL
-CHROPCODE:
+CHROPCODE:      ; CHAR = OPCODE
+  ; Cualquier valor para OPCODE es considerado válido
   BANKSEL   CHRBF
   MOVF      CHRBF,      W
-  BANKSEL   OPCODE
-  MOVWF     OPCODE
+  BANKSEL   ORPM01_OPCODE
+  MOVWF     ORPM01_OPCODE
   GOTO      CHAR_VAL
-CHRARGS:
+CHRARGS:        ; CHAR = ARGS
+  ; Cualquier valor para ARGS es considerado válido
   BANKSEL   CHRBF
   MOVF      CHRBF,      W
-  BANKSEL   ARGS
-  MOVWF     ARGS
+  BANKSEL   ORPM01_ARGS
+  MOVWF     ORPM01_ARGS
   GOTO      CHAR_VAL
 COND_ARGS:
-  BANKSEL   ARGS
-  MOVF      ARGS,       W
+  ; -> CONDITIONAL ARGS: ARGN no está presente si ARGS es 0
+  ; -> ARGN nunca debe ser 0
+  BANKSEL   ORPM01_ARGS
+  MOVF      ORPM01_ARGS,       W
   XORLW     0x00
   BTFSC     STATUS,     Z
   ; Z = 1, ARGS es 0, saltar a CHKSUM
@@ -120,11 +206,51 @@ COND_ARGS:
   ; Z = 0, ARGS no es 0, guardar ARGN
   BANKSEL   CHRBF
   MOVF      CHRBF,      W
-  BANKSEL   ARGN
-  MOVWF     ARGN
+  XORLW     0x00
+  BTFSC     STATUS,     Z
+  ; Z = 1, ARGN es 0, error
+  GOTO      CHAR_NVAL
+  ; Z = 0, ARGN no es 0, guardar ARGN
+  BANKSEL   ORPM01_ARGN
+  MOVWF     ORPM01_ARGN
   GOTO      CHAR_VAL
 CHKSUM:
-  
+  ; __chksum es una rutina implementada en C, el el proyecto adjunto "libsdcc.X"
+  MOVLW     ORPM01_ARRGS
+  MOVWF     STK04
+  MOVLW     HIGH(ORPM01_ARRGS)
+  MOVWF     STK03
+  MOVLW     0x00
+  MOVWF     STK02
+  BANKSEL   ORPM01_ARGN
+  MOVF      ORPM01_ARGN,W
+  MOVWF     STK01
+  BANKSEL   ORPM01_ARGS
+  MOVF      ORPM01_ARGS,W
+  MOVWF     STK00
+  BANKSEL   ORPM01_OPCODE
+  MOVF      ORPM01_OPCODE,  W
+  ;MOVWF    WREG
+  PAGESEL   __chksum
+  CALL      __chksum
+  PAGESEL   $
+  MOVWF     STK00
+  MOVF      CHRBF,      W
+  XORWF     STK00
+  MOVF      STK00,      W   ; Afecta Z
+  BTFSC     STATUS,     Z
+  ; Z = 1, La checksum es válida
+  GOTO      CHKSUM_VAL
+  ; Z = 0, La checksum es inválida
+  GOTO      CHAR_NVAL
+CHKSUM_VAL:
+  BANKSEL FLAGS
+  BSF     FLAGS,        FINALIZADO
+  BANKSEL CURR_CHAR
+  MOVF    CURR_CHAR,     W
+  BANKSEL CHKSM_IDX
+  MOVWF   CHKSM_IDX
+  GOTO    CHAR_VAL
 CHAR_NVAL:
   BANKSEL   CURR_CHAR
   CLRF      CURR_CHAR ; Reinicia el curr_char, ¿el efecto?, ignorar el búfer

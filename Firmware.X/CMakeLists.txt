@@ -73,5 +73,5 @@ ENDIF ( )
 PROJECT ( ${PIC_PROJECT_NAME} ASM C )
 
 # Agrega el subdirectorio /src donde viven todos los archivos de código fuente.
-ADD_SUBDIRECTORY ( src )
+ADD_SUBDIRECTORY ( lib )
 
