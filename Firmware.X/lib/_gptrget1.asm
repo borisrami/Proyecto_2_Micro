@@ -1,3 +1,5 @@
+; NOTA: EXTRAÍDO DIRECTAMENTE DEL CÓDIGO FUENTE DE SDCC, DISPONIBLE EN
+;     https://sourceforge.net/p/sdcc/code/HEAD/tree/trunk/sdcc/device/lib/pic14/libsdcc/regular/_gptrget1.S
 ; -------------------------------------------------------------------------
 ;  _gptrget1.S - read one byte pointed to by a generic pointer
 ;
@@ -42,8 +44,8 @@
 ;   void _gptrput3 (void *ptr, unsigned int  val);
 ;   void _gptrput4 (void *ptr, unsigned long val);
 
-  include macros.inc
-  include p16f_common.inc
+#include macros.inc
+#include p16f_common.inc
 
 	global	__gptrget
 	global	__gptrget1
@@ -59,15 +61,15 @@ __gptrget1:
 
 __dataptrget1:
 	setup_fsr
-	movf	INDF, W
+	movf	_INDF, W
 	return
 
 __codeptrget1:
 	; call the RETLW instruction at the given address
 	movf	STK00, W
-	movwf	PCLATH
+	movwf	_PCLATH
 	movf	STK01, W
-	movwf	PCL
+	movwf	_PCL
 	return	; should never be executed...
 
 	END

@@ -1,3 +1,7 @@
+; NOTA: IMPLEMENTADO EN C, COMPILADO Y MODIFICADO PARA FUNCIONAR EN MPLAB
+; NOTA: COMPILADO A PARTIR DE UNA VERSIÓN MOFICADA DE LIBSDCC
+;       ORIGINAL EN: https://sourceforge.net/p/sdcc/code/HEAD/tree/trunk/sdcc/device/lib/pic14/libsdcc/_mulint.c
+;       MODIFICADO EN: _cmuli.c
 ;--------------------------------------------------------
 ; File Created by SDCC : free open source ANSI-C Compiler
 ; Version 3.7.1 #10260 (MINGW64)

@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=src/isr.asm src/libtmr2.asm src/main.asm src/libtmr1.asm src/slave_recive.asm
+SOURCEFILES_QUOTED_IF_SPACED=src/isr.asm src/libtmr2.asm src/main.asm src/libtmr1.asm src/slave_recive.asm lib/symbols.asm
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/src/isr.o ${OBJECTDIR}/src/libtmr2.o ${OBJECTDIR}/src/main.o ${OBJECTDIR}/src/libtmr1.o ${OBJECTDIR}/src/slave_recive.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/src/isr.o.d ${OBJECTDIR}/src/libtmr2.o.d ${OBJECTDIR}/src/main.o.d ${OBJECTDIR}/src/libtmr1.o.d ${OBJECTDIR}/src/slave_recive.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/src/isr.o ${OBJECTDIR}/src/libtmr2.o ${OBJECTDIR}/src/main.o ${OBJECTDIR}/src/libtmr1.o ${OBJECTDIR}/src/slave_recive.o ${OBJECTDIR}/lib/symbols.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/src/isr.o.d ${OBJECTDIR}/src/libtmr2.o.d ${OBJECTDIR}/src/main.o.d ${OBJECTDIR}/src/libtmr1.o.d ${OBJECTDIR}/src/slave_recive.o.d ${OBJECTDIR}/lib/symbols.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/src/isr.o ${OBJECTDIR}/src/libtmr2.o ${OBJECTDIR}/src/main.o ${OBJECTDIR}/src/libtmr1.o ${OBJECTDIR}/src/slave_recive.o
+OBJECTFILES=${OBJECTDIR}/src/isr.o ${OBJECTDIR}/src/libtmr2.o ${OBJECTDIR}/src/main.o ${OBJECTDIR}/src/libtmr1.o ${OBJECTDIR}/src/slave_recive.o ${OBJECTDIR}/lib/symbols.o
 
 # Source Files
-SOURCEFILES=src/isr.asm src/libtmr2.asm src/main.asm src/libtmr1.asm src/slave_recive.asm
+SOURCEFILES=src/isr.asm src/libtmr2.asm src/main.asm src/libtmr1.asm src/slave_recive.asm lib/symbols.asm
 
 
 CFLAGS=
@@ -134,6 +134,14 @@ ${OBJECTDIR}/src/slave_recive.o: src/slave_recive.asm  nbproject/Makefile-${CND_
 	@${DEP_GEN} -d "${OBJECTDIR}/src/slave_recive.o"
 	@${FIXDEPS} "${OBJECTDIR}/src/slave_recive.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
+${OBJECTDIR}/lib/symbols.o: lib/symbols.asm  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/lib" 
+	@${RM} ${OBJECTDIR}/lib/symbols.o.d 
+	@${RM} ${OBJECTDIR}/lib/symbols.o 
+	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/lib/symbols.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG -d__MPLAB_DEBUGGER_PICKIT2=1 -q -p$(MP_PROCESSOR_OPTION)  -l\"${OBJECTDIR}/lib/symbols.lst\" -e\"${OBJECTDIR}/lib/symbols.err\" $(ASM_OPTIONS)    -o\"${OBJECTDIR}/lib/symbols.o\" \"lib/symbols.asm\" 
+	@${DEP_GEN} -d "${OBJECTDIR}/lib/symbols.o"
+	@${FIXDEPS} "${OBJECTDIR}/lib/symbols.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
+	
 else
 ${OBJECTDIR}/src/isr.o: src/isr.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/src" 
@@ -174,6 +182,14 @@ ${OBJECTDIR}/src/slave_recive.o: src/slave_recive.asm  nbproject/Makefile-${CND_
 	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/src/slave_recive.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION)  -l\"${OBJECTDIR}/src/slave_recive.lst\" -e\"${OBJECTDIR}/src/slave_recive.err\" $(ASM_OPTIONS)    -o\"${OBJECTDIR}/src/slave_recive.o\" \"src/slave_recive.asm\" 
 	@${DEP_GEN} -d "${OBJECTDIR}/src/slave_recive.o"
 	@${FIXDEPS} "${OBJECTDIR}/src/slave_recive.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
+	
+${OBJECTDIR}/lib/symbols.o: lib/symbols.asm  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/lib" 
+	@${RM} ${OBJECTDIR}/lib/symbols.o.d 
+	@${RM} ${OBJECTDIR}/lib/symbols.o 
+	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/lib/symbols.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION)  -l\"${OBJECTDIR}/lib/symbols.lst\" -e\"${OBJECTDIR}/lib/symbols.err\" $(ASM_OPTIONS)    -o\"${OBJECTDIR}/lib/symbols.o\" \"lib/symbols.asm\" 
+	@${DEP_GEN} -d "${OBJECTDIR}/lib/symbols.o"
+	@${FIXDEPS} "${OBJECTDIR}/lib/symbols.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
 endif
 

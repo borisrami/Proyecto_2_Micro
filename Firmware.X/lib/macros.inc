@@ -1,13 +1,18 @@
-;--------------------------------------------------------
-; File Created by SDCC : free open source ANSI-C Compiler
-; Version 3.7.1 #10260 (MINGW64)
-; Flags: -mpic14 -p16f887 --use-non-free --opt-code-speed --peep-asm --peep-return --allow-unsafe-read
-;--------------------------------------------------------
-; PIC port for the 14-bit core
-;--------------------------------------------------------
-	list	p=16f887
-	radix dec
-	include "p16f887.inc"
+; NOTA: EXTRAÍDO DIRECTAMENTE DEL CÓDIGO FUENTE DE SDCC, DISPONIBLE EN
+;     https://sourceforge.net/p/sdcc/code/HEAD/tree/trunk/sdcc/device/lib/pic14/libsdcc/regular/macros.inc
+; -----------------------------------------------
+; --- extern declared SFRs
+; -----------------------------------------------
+	extern _STATUS
+	extern _FSR
+	extern _INDF
+	extern _PCLATH
+	extern _PCL
+
+C	EQU	0
+DC	EQU	1
+Z	EQU	2
+IRP	EQU	7
 	
 ; -----------------------------------------------
 ; --- generic pointer access helpers
@@ -19,11 +24,11 @@ GPTRTAG_CODE	EQU	0x80
 ; setup FSR to point to (STK00:STK01)
 setup_fsr	macro
 	movf	STK01, W
-	movwf	FSR
+	movwf	_FSR
 	; select indirectly addressed bank
-	bcf	STATUS, IRP
+	bcf	_STATUS, IRP
 	btfsc	STK00, 0
-	bsf	STATUS, IRP
+	bsf	_STATUS, IRP
 	endm
 
 ; increment FSR, update IRP on bank crossings
@@ -36,17 +41,17 @@ inc_fsr		macro
 select_routine	macro	dataptr, codeptr
 	; __data pointer tag: 0x00
 	xorlw	GPTRTAG_DATA
-	btfsc	STATUS, Z
+	btfsc	_STATUS, Z
 	goto	dataptr
 	; __code pointer tag: 0x80
 	xorlw	(GPTRTAG_DATA ^ GPTRTAG_CODE)
-	btfsc	STATUS, Z
+	btfsc	_STATUS, Z
 	goto	codeptr
 	endm
 
 check_data	macro	dataptr
 	; __data pointer tag: 0x00
 	xorlw	GPTRTAG_DATA
-	btfsc	STATUS, Z
+	btfsc	_STATUS, Z
 	goto	dataptr
 	endm
