@@ -17,6 +17,7 @@
       <itemPath>src/_cmuli.asm</itemPath>
       <itemPath>../Firmware.X/lib/_gptrget1.asm</itemPath>
       <itemPath>src/_chksm.asm</itemPath>
+      <itemPath>src/_putbuf.asm</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -25,6 +26,7 @@
       <itemPath>../Firmware.X/lib/_cmuli.c</itemPath>
       <itemPath>../Firmware.X/lib/_chksm.c</itemPath>
       <itemPath>../Firmware.X/lib/CMakeLists.txt</itemPath>
+      <itemPath>../Firmware.X/lib/pic16f887.c</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>

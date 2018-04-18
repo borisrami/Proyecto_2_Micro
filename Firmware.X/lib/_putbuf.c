@@ -1,4 +1,4 @@
-//===-- _chksm.c - Proyecto 2: Rutina para CheckSum -------------------------------------------------------*- c -*-===//
+//===-- _putbuf.c - Proyecto 2: cargar un byte en una posición de un array --------------------------------*- c -*-===//
 //
 //   Proyecto 2 - Microcontroladores aplicados a la industria
 //
@@ -13,21 +13,11 @@
 //
 //===--------------------------------------------------------------------------------------------------------------===//
 
-#include <stdint.h>
+void _putbuf(unsigned char[], unsigned char, unsigned char*, unsigned char);
 
-uint16_t _cmuli(uint8_t a, uint8_t b);
-
-uint8_t _chksum(uint8_t opcode, uint8_t args, uint8_t argn, uint8_t arrgs[]){
-    if (args == 0){
-        return opcode;
-    }else{
-        uint16_t size_arrgs = _cmuli(args, argn);
-        uint8_t chksm = opcode;
-        chksm += args;
-        chksm += argn;
-        for (uint16_t i = 0; i < size_arrgs; i++){
-            chksm += arrgs[i];
-        }
-        return chksm;
-    }
+void _putbuf(unsigned char buff[], unsigned char size, unsigned char *idx, unsigned char val){
+    unsigned char vidx = *idx;
+    if(vidx >= size){return;}
+    buff[vidx] = val;
+    *idx = vidx + 1;
 }

@@ -36,6 +36,7 @@
   EXTERN      ORPM01_ARRGS
 #endif
 ORPM01_READY  EQU       1
+ARRGS_SIZET   EQU       12
     
 
 
