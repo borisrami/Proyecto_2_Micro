@@ -4,8 +4,8 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>../Firmware.X/lib/macros.inc</itemPath>
-      <itemPath>../Firmware.X/lib/p16f_common.inc</itemPath>
+      <itemPath>src/macros.inc</itemPath>
+      <itemPath>src/p16f_common.inc</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -15,18 +15,22 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>src/_cmuli.asm</itemPath>
-      <itemPath>../Firmware.X/lib/_gptrget1.asm</itemPath>
       <itemPath>src/_chksm.asm</itemPath>
+      <itemPath>src/_mulchar.asm</itemPath>
+      <itemPath>src/_gptrget1.asm</itemPath>
+      <itemPath>src/_gptrput1.asm</itemPath>
       <itemPath>src/_putbuf.asm</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
                    projectFiles="false">
-      <itemPath>Makefile</itemPath>
-      <itemPath>../Firmware.X/lib/_cmuli.c</itemPath>
-      <itemPath>../Firmware.X/lib/_chksm.c</itemPath>
       <itemPath>../Firmware.X/lib/CMakeLists.txt</itemPath>
+      <itemPath>../Firmware.X/lib/_chksm.c</itemPath>
+      <itemPath>../Firmware.X/lib/_cmuli.c</itemPath>
+      <itemPath>../Firmware.X/lib/_mulchar.c</itemPath>
+      <itemPath>../Firmware.X/lib/_putbuf.c</itemPath>
       <itemPath>../Firmware.X/lib/pic16f887.c</itemPath>
+      <itemPath>../Firmware.X/lib/symbols.asm</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>

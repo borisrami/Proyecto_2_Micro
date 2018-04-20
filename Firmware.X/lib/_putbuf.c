@@ -13,11 +13,22 @@
 //
 //===--------------------------------------------------------------------------------------------------------------===//
 
-void _putbuf(unsigned char[], unsigned char, unsigned char*, unsigned char);
+// 0x05 es el offset de curr_char
 
-void _putbuf(unsigned char buff[], unsigned char size, unsigned char *idx, unsigned char val){
-    unsigned char vidx = *idx;
-    if(vidx >= size){return;}
-    buff[vidx] = val;
-    *idx = vidx + 1;
+char _putbuf(unsigned char, unsigned char, unsigned char, unsigned char, unsigned char[], unsigned char);
+
+char _putbuf(unsigned char curr_char,
+             unsigned char args,
+             unsigned char argn,
+             unsigned char size,
+             unsigned char buff[],
+             unsigned char val){
+    static unsigned char left;
+    static unsigned char idx;
+    if(curr_char==0x05){idx = 0x00;left = args*argn;}
+    if(idx >= size){return 0xFF;}
+    buff[idx] = val;
+    left -= 1;
+    idx += 1;
+    return left==0?0x01:0x00;
 }

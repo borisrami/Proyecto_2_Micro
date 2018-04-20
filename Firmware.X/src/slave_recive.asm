@@ -30,6 +30,7 @@ CURR_CHAR
 ; extern declarations
 ;-------------------------------------------------------------------------------
   EXTERN __chksum
+  EXTERN __putbuf
 ;-------------------------------------------------------------------------------
 ; uninitialized data
 ;-------------------------------------------------------------------------------
@@ -41,6 +42,7 @@ ORPM01_ARGN   RES       1
 ORPM01_ARRGS  RES       ARRGS_SIZET ; número máximo de bytes para los argumentos
 FLAGS         RES       1
 FINALIZADO    EQU       0
+MKCHKSUM      EQU       1
 ORPM01_FLAGS  RES       1
 CHKSM_IDX     RES       1
 ;-------------------------------------------------------------------------------
@@ -136,7 +138,58 @@ FINALIZE_ENTRY:
   BTFSC     STATUS,     Z
   GOTO      CHREXIT1 ; Z = 1
 CAPTURE_ARGS:
-  RETURN
+  BANKSEL   FLAGS
+  BTFSC     FLAGS,      MKCHKSUM
+  GOTO      CHKSUM
+  ; STK06: VALOR
+  BANKSEL   CHRBF
+  MOVF      CHRBF,      W
+  MOVWF     STK06
+  ; STK05: ARR_L
+  MOVLW     LOW(ORPM01_ARRGS)
+  MOVWF     STK05
+  ; STK04: ARR_H
+  MOVLW     HIGH(ORPM01_ARRGS)
+  MOVWF     STK04
+  ; STK03: No estoy seguro... FSR?
+  ;MOVLW     0x00
+  CLRF      STK03
+  ; STK02: Tamaño del array
+  MOVLW     ARRGS_SIZET
+  MOVWF     STK02
+  ; STK01: ARGN
+  BANKSEL   ORPM01_ARGN
+  MOVF      ORPM01_ARGN,  W
+  MOVWF     STK01
+  ; STK00: ARGS
+  BANKSEL   ORPM01_ARGS
+  MOVF      ORPM01_ARGS,  W
+  MOVWF     STK00
+  ; WREG: CURR_CHAR
+  BANKSEL   CURR_CHAR
+  MOVF      CURR_CHAR,    W
+  PAGESEL   __putbuf
+  CALL      __putbuf
+  PAGESEL  $
+  ; 0xFF: Overflow
+  ; 0x01: Finalizar
+  ; 0x00: Continuar
+  MOVWF     STK00
+  XORLW     0xFF
+  BTFSC     STATUS,     Z
+  GOTO      CHAR_NVAL
+  MOVF      STK00,      W
+  XORLW     0x01
+  BTFSC     STATUS,     Z
+  GOTO      CAPTURE_END
+  MOVF      STK00,      W
+  BTFSC     STATUS,     Z
+  GOTO      CHAR_VAL
+  GOTO      CHAR_NVAL
+CAPTURE_END:
+  BANKSEL   FLAGS
+  BSF       FLAGS,      MKCHKSUM
+  GOTO      CHAR_VAL
 ;...............................................................................
 CHREXIT0:       ; CHAR = 0xAA
   BANKSEL   CHRBF
@@ -215,6 +268,8 @@ COND_ARGS:
   MOVWF     ORPM01_ARGN
   GOTO      CHAR_VAL
 CHKSUM:
+  BANKSEL   FLAGS
+  BCF       FLAGS,      MKCHKSUM
   ; __chksum es una rutina implementada en C, el el proyecto adjunto "libsdcc.X"
   MOVLW     ORPM01_ARRGS
   MOVWF     STK04
@@ -244,13 +299,13 @@ CHKSUM:
   ; Z = 0, La checksum es inválida
   GOTO      CHAR_NVAL
 CHKSUM_VAL:
-  BANKSEL FLAGS
-  BSF     FLAGS,        FINALIZADO
-  BANKSEL CURR_CHAR
-  MOVF    CURR_CHAR,     W
-  BANKSEL CHKSM_IDX
-  MOVWF   CHKSM_IDX
-  GOTO    CHAR_VAL
+  BANKSEL   FLAGS
+  BSF       FLAGS,      FINALIZADO
+  BANKSEL   CURR_CHAR
+  MOVF      CURR_CHAR,   W
+  BANKSEL   CHKSM_IDX
+  MOVWF     CHKSM_IDX
+  GOTO      CHAR_VAL
 CHAR_NVAL:
   BANKSEL   CURR_CHAR
   CLRF      CURR_CHAR ; Reinicia el curr_char, ¿el efecto?, ignorar el búfer

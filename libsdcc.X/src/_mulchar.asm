@@ -12,8 +12,6 @@
 ;--------------------------------------------------------
 ; external declarations
 ;--------------------------------------------------------
-	extern	__cmuli
-	extern	__gptrget1
 
 	extern PSAVE
 	extern SSAVE
@@ -35,7 +33,7 @@
 ;--------------------------------------------------------
 ; global declarations
 ;--------------------------------------------------------
-	global	__chksum
+	global	__mulchar
 
 ;--------------------------------------------------------
 ; global definitions
@@ -46,18 +44,12 @@
 ;--------------------------------------------------------
 ; compiler-defined variables
 ;--------------------------------------------------------
-UDL__chksm_0	udata
+UDL__mulchar_0	udata
 r0x1000	res	1
 r0x1001	res	1
 r0x1002	res	1
-r0x1005	res	1
-r0x1004	res	1
 r0x1003	res	1
-r0x1007	res	1
-r0x1006	res	1
-r0x1008	res	1
-r0x1009	res	1
-r0x100A	res	1
+r0x1004	res	1
 ;--------------------------------------------------------
 ; initialized data
 ;--------------------------------------------------------
@@ -68,134 +60,63 @@ r0x100A	res	1
 ;--------------------------------------------------------
 ; code
 ;--------------------------------------------------------
-code__chksm	code
+code__mulchar	code
 ;***
 ;  pBlock Stats: dbName = C
 ;***
 ;has an exit
-;functions called:
-;   __cmuli
-;   __gptrget1
-;   __cmuli
-;   __gptrget1
-;17 compiler assigned registers:
+;6 compiler assigned registers:
 ;   r0x1000
 ;   STK00
 ;   r0x1001
-;   STK01
 ;   r0x1002
-;   STK02
 ;   r0x1003
-;   STK03
 ;   r0x1004
-;   STK04
-;   r0x1005
-;   r0x1006
-;   r0x1007
-;   r0x1008
-;   r0x1009
-;   r0x100A
-;   r0x100B
 ;; Starting pCode block
-S__chksm___chksum	code
-__chksum:
+S__mulchar___mulchar	code
+__mulchar:
 ; 2 exit points
-;	.line	20;		uint8_t _chksum(uint8_t opcode, uint8_t args, uint8_t argn, uint8_t arrgs[]){
+;	.line	33;		_mulchar (char a, char b)
 	BANKSEL	r0x1000
 	MOVWF	r0x1000
 	MOVF	STK00,W
 	MOVWF	r0x1001
-	MOVF	STK01,W
-	MOVWF	r0x1002
-	MOVF	STK02,W
-	MOVWF	r0x1003
-	MOVF	STK03,W
-	MOVWF	r0x1004
-	MOVF	STK04,W
-	MOVWF	r0x1005
-;	.line	21;		if (args == 0){
-	MOVF	r0x1001,W
-	BTFSS	STATUS,2
-	GOTO	_00107_DS_
-;	.line	22;		return opcode;
-	MOVF	r0x1000,W
-	GOTO	_00112_DS_
-_00107_DS_:
-;	.line	24;		uint16_t size_arrgs = _cmuli(args, argn);
-	BANKSEL	r0x1002
-	MOVF	r0x1002,W
-	MOVWF	STK00
-	MOVF	r0x1001,W
-	PAGESEL	__cmuli
-	CALL	__cmuli
-	PAGESEL	$
-	BANKSEL	r0x1006
-	MOVWF	r0x1006
-	MOVF	STK00,W
-	MOVWF	r0x1007
-;	.line	26;		chksm += args;
-	MOVF	r0x1001,W
-	ADDWF	r0x1000,F
-;	.line	27;		chksm += argn;
-	MOVF	r0x1002,W
-	ADDWF	r0x1000,F
-;	.line	28;		for (uint16_t i = 0; i < size_arrgs; i++){
-	CLRF	r0x1001
+;	.line	35;		char result = 0;
 	CLRF	r0x1002
-_00110_DS_:
-	BANKSEL	r0x1006
-	MOVF	r0x1006,W
-	SUBWF	r0x1002,W
-	BTFSS	STATUS,2
-	GOTO	_00124_DS_
-	MOVF	r0x1007,W
-	SUBWF	r0x1001,W
-_00124_DS_:
-	BTFSC	STATUS,0
-	GOTO	_00105_DS_
-;;genSkipc:3257: created from rifx:0000000004745770
-;	.line	29;		chksm += arrgs[i];
-	BANKSEL	r0x1001
+;	.line	39;		for (i = 0; i < 8u; i++) {
+	MOVLW	0x08
+	MOVWF	r0x1003
+_00119_DS_:
+;	.line	41;		if (a & (unsigned char)0x0001u) result += b;
+	BANKSEL	r0x1000
+	BTFSS	r0x1000,0
+	GOTO	_00114_DS_
 	MOVF	r0x1001,W
-	ADDWF	r0x1005,W
-	MOVWF	r0x1008
+	ADDWF	r0x1002,F
+;;shiftRight_Left2ResultLit:5323: shCount=1, size=1, sign=0, same=1, offr=0
+_00114_DS_:
+;	.line	45;		a = ((unsigned char)a) >> 1u;
+	BCF	STATUS,0
+	BANKSEL	r0x1000
+	RRF	r0x1000,F
+;	.line	46;		b <<= 1u;
+	BCF	STATUS,0
+	RLF	r0x1001,F
+	DECF	r0x1003,W
+	MOVWF	r0x1004
+	MOVWF	r0x1003
+;	.line	39;		for (i = 0; i < 8u; i++) {
 	MOVF	r0x1004,W
-	MOVWF	r0x1009
+	BTFSS	STATUS,2
+	GOTO	_00119_DS_
+;	.line	49;		return result;
 	MOVF	r0x1002,W
-	BTFSC	STATUS,0
-	INCFSZ	r0x1002,W
-	ADDWF	r0x1009,F
-	MOVF	r0x1003,W
-	BTFSC	STATUS,0
-	ADDLW	0x01
-	MOVWF	r0x100A
-	MOVF	r0x1008,W
-	MOVWF	STK01
-	MOVF	r0x1009,W
-	MOVWF	STK00
-	MOVF	r0x100A,W
-	PAGESEL	__gptrget1
-	CALL	__gptrget1
-	PAGESEL	$
-;;1	MOVWF	r0x100B
-	BANKSEL	r0x1000
-	ADDWF	r0x1000,F
-;	.line	28;		for (uint16_t i = 0; i < size_arrgs; i++){
-	INCF	r0x1001,F
-	BTFSC	STATUS,2
-	INCF	r0x1002,F
-	GOTO	_00110_DS_
-_00105_DS_:
-;	.line	31;		return chksm;
-	BANKSEL	r0x1000
-	MOVF	r0x1000,W
-_00112_DS_:
-;	.line	33;		}
+;	.line	50;		}
 	RETURN	
-; exit point of __chksum
+; exit point of __mulchar
 
 
 ;	code size estimation:
-;	   63+   11 =    74 instructions (  170 byte)
+;	   22+    3 =    25 instructions (   56 byte)
 
 	end
