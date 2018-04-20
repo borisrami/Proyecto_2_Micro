@@ -39,7 +39,6 @@
 ;-------------------------------------------------------------------------------
 TMR1_INIT   CODE
 TMR1_INIT:
-  PAGESEL   $
   BANKSEL   TMR1L
   CLRF      TMR1L
   CLRF      TMR1H

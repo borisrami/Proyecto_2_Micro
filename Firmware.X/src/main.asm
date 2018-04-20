@@ -91,10 +91,15 @@ SETUP:
   BSF	    INTCON,       PEIE
   ; Configurar TIMER2
   CALL      TMR2_INIT
-  PAGESEL   $
   ; Esperar 1 segundo (para estabilidad)
   BLOCK_MS  1000
-  PAGESEL   $
+  ; -> Configurar TIMER1 como temporizador para el módulo CCP. No se puede usar
+  ;    PWM con la frecuencia de diseño (18.432 MHz). El Timer1 no será el
+  ;    responsable de la interrupción, se configura solamente para el módulo CCP
+  BANKSEL   T1CON
+  BCF       T1CON,        TMR1GE ; Cuenta siempre
+  BCF       T1CON,        TMR1CS ; FOSC/4
+  CALL      TMR1_INIT
   ; Configurar el puerto serial
   ; -> Activa el transmisor asíncrono
   BANKSEL   TXSTA
@@ -123,7 +128,32 @@ SETUP:
   GOTO      BUSY_WAIT
 L1: ; Esta etiqueta es una trampa :3
   GOTO	    L1
-  GOTO      L0
+;-------------------------------------------------------------------------------
+; Problema: Con 18.432MHz no se puede generar un PWM descente. Es imposible usar
+; el módulo PWM a esa frecuencia para mover un servo, sin contar que el PIC
+; cuenta con solo dos PWM: uno de ellos debe ser por software.
+;
+; La solución propuesta e implementada es utilizar el TIMER1 y el módulo CCP
+; para generar los 3 "duty cycle" por software en el ISR. En conjunto con el
+; TIMER2, generar el PWM a 50.000 Hz.
+;
+; TIMER1 puede contar de 1 en 1 cada 217.01 nanosegundos como mínimo. El tiempo
+; del duty cycle de un servo es una escala lineal que representa ángulos de 0 a
+; 180 en un rango de 1.00 mS a 2.00 mS
+;
+; Cada paso discreto del servo se puede representar como 1.00 mS / 180 o
+; 5.556 uS por grado. Para alcanzar 5.556 uS, los registros del CCP se deben
+; configurar en 25.6 (o 26). El resultado es un intervalo de 1.0156 mS con
+; 180 divisiones de 5.642 uS
+;
+; Durante 5.642 uS, que es el tiempo en el que se espera la siguiente
+; interrupción del CCP, el PIC puede ejecutar solamente 26 instrucciones. Esto
+; significa que durante 1.0156 mS el PIC no podrá responder a ninguna
+; interrupción o ejecutar código.
+;
+; En los otros 19 mS, el Timer2 puede apoyar al módulo CCP, al elevar los pines
+; del puerto cada 20.000 mS, esperar 1.000 mS e inmediatamente encender el
+; módulo CCP.
 ;-------------------------------------------------------------------------------
 BUSY_WAIT   CODE
 BUSY_WAIT:

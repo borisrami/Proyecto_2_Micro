@@ -62,7 +62,6 @@ RCV_LOOPER:
   ; Por motivos de que el PIC es muy lento y con pocos recursos, mientras haya
   ; un comando en ejecución (READY==1), no se podra obtener otro desde el
   ; serial.
-  PAGESEL   $
   BANKSEL   ORPM01_FLAGS
   BTFSC     ORPM01_FLAGS, ORPM01_READY
   GOTO      FLSH_N_RET  ; ORPM01_READY = 1
@@ -77,7 +76,6 @@ FLSH_N_RET:
   RETURN  ; RCIF = 0
 GETCHAR:
   CALL      FLUSHCHAR
-  PAGESEL   $
   BANKSEL   CHRBF
   MOVWF     CHRBF
   ; Switch (CURR_CHAR)
@@ -318,7 +316,6 @@ CHAR_VAL:
 ;-------------------------------------------------------------------------------
 FLUSHCHAR   CODE
 FLUSHCHAR:
-  PAGESEL   $
   BANKSEL   RCREG
   MOVF      RCREG,      W
   RETURN

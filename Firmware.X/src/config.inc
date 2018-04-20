@@ -20,8 +20,14 @@
 #define     TMR2_PRESCAL              4
 #define     TMR2_POSTSCAL             6
 #define     TMR2_INTERRUPT
+#define     TMR2_SERVO
+#define     TMR2_SERVO_MINDUTY_MS     1
+#define     TMR2_SERVO_CYCLCE_MS      20
+#define     TMR2_SERVO_BITMASK        b'00000111'
+#define     TMR2_SERVO_PORT           PORTD
+#define     TMR2_SERVO_TRIS           TRISD
 #define     TMR1_CLK_KHZ              (CLOCK_KHZ/4)
-#define     TMR1_PRESCAL              4
+#define     TMR1_PRESCAL              1
 #define     TMR1_COUT_RATE_US         5    
 ;#define     TMR1_INTERRUPT   
     

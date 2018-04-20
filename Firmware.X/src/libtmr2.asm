@@ -36,12 +36,19 @@
 ;-------------------------------------------------------------------------------
 LIBTMR2I         idata
 TICKS_FROM_BOOT
-  DB 0x00, 0x00
+  DB  0x00, 0x00
+  #ifdef      TMR2_SERVO
+SRV_HOLD
+  DB  0x00
+SRV_CYCL        
+  DB  0x00
+#endif
 ;-------------------------------------------------------------------------------
 ; uninitialized data
 ;-------------------------------------------------------------------------------
 LIBTMR2U        udata
 FUTURE          res     2
+
 ;-------------------------------------------------------------------------------
 ; global declarations
 ;-------------------------------------------------------------------------------
@@ -53,7 +60,6 @@ FUTURE          res     2
 ;-------------------------------------------------------------------------------
 TMR2_INIT   CODE
 TMR2_INIT:
-  PAGESEL   $
   ; Configura TIMER2
   BANKSEL   T2CON
 #if         TMR2_PRESCAL == 1
@@ -77,6 +83,18 @@ TMR2_INIT:
   ; -> Activar interrupción para TIMER2
   BSF	    PIE1,         TMR2IE
 #endif
+#ifdef      TMR2_SERVO
+  BANKSEL   TMR2_SERVO_TRIS
+  MOVF      TMR2_SERVO_TRIS,  W
+  ANDLW     ~TMR2_SERVO_BITMASK
+  MOVWF     TMR2_SERVO_TRIS
+  BANKSEL   SRV_CYCL
+  MOVLTW    TMR2_SERVO_CYCLCE_MS
+  MOVWF     SRV_CYCL
+  BANKSEL   SRV_HOLD
+  MOVLTW    TMR2_SERVO_MINDUTY_MS
+  MOVWF     SRV_HOLD
+#endif
   RETURN
 ;-------------------------------------------------------------------------------
 ; WARNING: En código que se ejecuta en el ISR no se deben usar los registros
@@ -89,13 +107,41 @@ TMR2_ISR:
   INCF      TICKS_FROM_BOOT
   BTFSC     STATUS,     Z
   INCF      (TICKS_FROM_BOOT+1),  F
+#ifdef      TMR2_SERVO
+  BANKSEL   SRV_CYCL
+  DECFSZ    SRV_CYCL
+  ; CYCL != 0
+  GOTO      DECHLD
+  ; CYCL == 0
+  MOVLTW    TMR2_SERVO_CYCLCE_MS
+  MOVWF     SRV_CYCL
+  BANKSEL   SRV_HOLD
+  MOVLTW    TMR2_SERVO_MINDUTY_MS
+  MOVWF     SRV_HOLD
+  BANKSEL   TMR2_SERVO_PORT
+  MOVF      TMR2_SERVO_PORT,  W
+  IORLW     TMR2_SERVO_BITMASK
+  MOVWF     TMR2_SERVO_PORT
+  GOTO      EXISR
+DECHLD:
+  BANKSEL   SRV_HOLD
+  DECFSZ    SRV_HOLD
+  ; HOLD != 0
+  GOTO      EXISR
+  ; HOLD == 0
+  BANKSEL   TMR1L
+  CLRF      TMR1L
+  CLRF      TMR1H
+  BANKSEL   T1CON
+  BSF       T1CON,      TMR1ON
+#endif
+EXISR:
   RETURN
 ;-------------------------------------------------------------------------------
 BLOCK_TICKS16  CODE
 ; void block_ticks16( unsigned int x );
 ; Bloquea el hilo de ejecución durante x (16 bit) ticks
 BLOCK_TICKS16:
-  PAGESEL     $
   ; La variable FUTURE es de 16 bits y contiene el valor de TICKS_FROM_BOOT + x
   BANKSEL     FUTURE
   MOVWF       FUTURE                          ; FUTUREL = xL
