@@ -34,17 +34,18 @@ CURR_CHAR
 ;-------------------------------------------------------------------------------
 ; uninitialized data
 ;-------------------------------------------------------------------------------
-SLVRCIU       udata
+SLVRCIU       UDATA
 CHRBF         RES       1
-ORPM01_OPCODE RES       1
-ORPM01_ARGS   RES       1
-ORPM01_ARGN   RES       1
-ORPM01_ARRGS  RES       ARRGS_SIZET ; número máximo de bytes para los argumentos
 FLAGS         RES       1
 FINALIZADO    EQU       0
 MKCHKSUM      EQU       1
-ORPM01_FLAGS  RES       1
 CHKSM_IDX     RES       1
+SLVRCIUFIXED  UDATA     0x30
+ORPM01_OPCODE RES       1
+ORPM01_ARGS   RES       1
+ORPM01_ARGN   RES       1
+ORPM01_FLAGS  RES       1
+ORPM01_ARRGS  RES       ARRGS_SIZET ; número máximo de bytes para los argumentos
 ;-------------------------------------------------------------------------------
 ; global declarations
 ;-------------------------------------------------------------------------------

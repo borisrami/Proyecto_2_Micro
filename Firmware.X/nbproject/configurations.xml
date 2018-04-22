@@ -23,6 +23,7 @@
       <itemPath>src/libtmr1.asm</itemPath>
       <itemPath>src/slave_recive.asm</itemPath>
       <itemPath>lib/symbols.asm</itemPath>
+      <itemPath>src/executer.asm</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

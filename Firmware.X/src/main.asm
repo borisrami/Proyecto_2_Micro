@@ -20,6 +20,7 @@
   INCLUDE   "config.inc"
   INCLUDE   "libtmr2.inc"
   INCLUDE   "libtmr1.inc"
+  INCLUDE   "slave_recive.inc"
 #define     ABI_BUILDER
   INCLUDE   "ABI.inc"
 ;-------------------------------------------------------------------------------
@@ -31,6 +32,7 @@
 ; external declarations
 ;-------------------------------------------------------------------------------
  EXTERN     RCV_LOOPER
+ EXTERN     COMMAND_EXEC
 ;-------------------------------------------------------------------------------
 ; global variables
 ;-------------------------------------------------------------------------------
@@ -128,7 +130,7 @@ SETUP:
   BCF	    TXSTA,        BRGH
   BANKSEL   SPBRGH
   CLRF	    SPBRGH
-  MOVLW	    0x09
+  MOVLW	    0x19
   MOVWF	    SPBRG
   ; -> Activa el receptor asíncrono
   BANKSEL   RCSTA
@@ -183,5 +185,8 @@ BUSY_WAIT:
   ; BUSY WAIT descarga el trabajo del ISR en una rutina cíclica que polea los
   ; resultados
   CALL      RCV_LOOPER
+  BANKSEL   ORPM01_FLAGS
+  BTFSC     ORPM01_FLAGS, ORPM01_READY
+  CALL      COMMAND_EXEC
   GOTO      BUSY_WAIT
   END

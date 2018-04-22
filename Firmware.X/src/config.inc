@@ -15,7 +15,7 @@
 ;
 ;===-----------------------------------------------------------------------===//
 #define     CLOCK_KHZ                 18432
-#define     BAUD_RATE                 115200
+#define     BAUD_RATE                 57600
 #define     TMR2_TICK_US              500
 #define     TMR2_PRESCAL              4
 #define     TMR2_POSTSCAL             6
@@ -35,7 +35,9 @@
 #define     TMR2_SERVO_TRIS           TRISD
 #define     TMR1_CLK_KHZ              (CLOCK_KHZ/4)
 #define     TMR1_PRESCAL              1
-#define     TMR1_COUT_RATE_US         5    
+#define     TMR1_COUT_RATE_US         5
+#define     EXECUTER_ABSMOVE          0x11
+#define     EXECUTER_RELMOVE          0x22
 ;#define     TMR1_INTERRUPT   
     
     ; Obliga a macros.inc a ser importado después de este archivo.
