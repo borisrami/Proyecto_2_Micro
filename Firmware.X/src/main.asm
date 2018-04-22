@@ -100,6 +100,18 @@ SETUP:
   BCF       T1CON,        TMR1GE ; Cuenta siempre
   BCF       T1CON,        TMR1CS ; FOSC/4
   CALL      TMR1_INIT
+  ; Configurar CCP
+  BANKSEL   CCP1CON
+  ; Compare Mode con Interrupt y reset del Timer 1
+  MOVLW     (0<<P1M0)|(0<<DC1B0)|(b'1011'<<CCP1M0)
+  MOVWF     CCP1CON
+  BANKSEL   CCPR1H
+  MOVLW     HIGH((SERVO_RANGE_US*CLOCK_KHZ)/(4000*SERVO_RANGE_DEGS))
+  MOVWF     CCPR1H
+  MOVLW     LOW((SERVO_RANGE_US*CLOCK_KHZ)/(4000*SERVO_RANGE_DEGS))
+  MOVWF     CCPR1L
+  BANKSEL   PIE1
+  BSF       PIE1,       CCP1IE
   ; Configurar el puerto serial
   ; -> Activa el transmisor asíncrono
   BANKSEL   TXSTA
@@ -154,6 +166,17 @@ L1: ; Esta etiqueta es una trampa :3
 ; En los otros 19 mS, el Timer2 puede apoyar al módulo CCP, al elevar los pines
 ; del puerto cada 20.000 mS, esperar 1.000 mS e inmediatamente encender el
 ; módulo CCP.
+;
+; Luego de diversas pruebas, el ISR no puede ejecutarse en menos de 26 ciclos de
+; pulsos del reloj. Existen unas macros en TMR2 e ISR que ayudan a calcular
+; automáticamente todos los valores dadas las especificaciones en config.inc
+;
+; Para esta configuración, 75 divisiones en el intervalo de 1000 uS del servo
+; funcionan bien, mientras que 180 simplemente no funciona. Esto es por culpa
+; del ISR. Mientras más tiempo se tarde el ISR, menos resolución tendrá.
+;
+; Con 75 instrucciones para el ISR, las divisiones máximas disminuyen a 60, lo
+; cual resulta razonable y seguro.
 ;-------------------------------------------------------------------------------
 BUSY_WAIT   CODE
 BUSY_WAIT:

@@ -46,15 +46,17 @@ SRV_CYCL
 ;-------------------------------------------------------------------------------
 ; uninitialized data
 ;-------------------------------------------------------------------------------
-LIBTMR2U        udata
-FUTURE          res     2
-
+LIBTMR2U        UDATA
+FUTURE          RES     2
+TMR2_ABSDATA    UDATA   0x6F ; BANK0
+SRV_TICKS       RES     1
 ;-------------------------------------------------------------------------------
 ; global declarations
 ;-------------------------------------------------------------------------------
   GLOBAL    TMR2_INIT
   GLOBAL    TMR2_ISR
   GLOBAL    BLOCK_TICKS16
+  GLOBAL    SRV_TICKS
 ;-------------------------------------------------------------------------------
 ; code
 ;-------------------------------------------------------------------------------
@@ -89,10 +91,10 @@ TMR2_INIT:
   ANDLW     ~TMR2_SERVO_BITMASK
   MOVWF     TMR2_SERVO_TRIS
   BANKSEL   SRV_CYCL
-  MOVLTW    TMR2_SERVO_CYCLCE_MS
+  MOVLTW    TMR2_SERVO_CYCLCE_US
   MOVWF     SRV_CYCL
   BANKSEL   SRV_HOLD
-  MOVLTW    TMR2_SERVO_MINDUTY_MS
+  MOVLTW    TMR2_SERVO_MINDUTY_US
   MOVWF     SRV_HOLD
 #endif
   RETURN
@@ -113,10 +115,10 @@ TMR2_ISR:
   ; CYCL != 0
   GOTO      DECHLD
   ; CYCL == 0
-  MOVLTW    TMR2_SERVO_CYCLCE_MS
+  MOVLTW    TMR2_SERVO_CYCLCE_US
   MOVWF     SRV_CYCL
   BANKSEL   SRV_HOLD
-  MOVLTW    TMR2_SERVO_MINDUTY_MS
+  MOVLTW    TMR2_SERVO_MINDUTY_US
   MOVWF     SRV_HOLD
   BANKSEL   TMR2_SERVO_PORT
   MOVF      TMR2_SERVO_PORT,  W
@@ -132,6 +134,19 @@ DECHLD:
   BANKSEL   TMR1L
   CLRF      TMR1L
   CLRF      TMR1H
+  BANKSEL   SRV_TICKS
+#define SERVO_DESFASE (SERVO_ACUAL_MINDUTY_US-TMR2_SERVO_MINDUTY_US)/(SERVO_RANGE_US/SERVO_RANGE_DEGS)
+  MOVLW     SERVO_RANGE_DEGS+SERVO_DESFASE-SERVO_OVERSHT_COMPS
+  MOVWF     SRV_TICKS
+EXTERN    SRV1_ANGLE
+  MOVLW     0
+  MOVWF     SRV1_ANGLE
+EXTERN    SRV2_ANGLE
+  MOVLW     SERVO_RANGE_DEGS/2
+  MOVWF     SRV2_ANGLE
+EXTERN    SRV3_ANGLE
+  MOVLW     SERVO_RANGE_DEGS
+  MOVWF     SRV3_ANGLE
   BANKSEL   T1CON
   BSF       T1CON,      TMR1ON
 #endif

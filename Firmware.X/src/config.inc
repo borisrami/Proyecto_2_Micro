@@ -16,14 +16,21 @@
 ;===-----------------------------------------------------------------------===//
 #define     CLOCK_KHZ                 18432
 #define     BAUD_RATE                 115200
-#define     TMR2_TICK_US              1000
+#define     TMR2_TICK_US              500
 #define     TMR2_PRESCAL              4
 #define     TMR2_POSTSCAL             6
 #define     TMR2_INTERRUPT
 #define     TMR2_SERVO
-#define     TMR2_SERVO_MINDUTY_MS     1
-#define     TMR2_SERVO_CYCLCE_MS      20
+#define     TMR2_SERVO_MINDUTY_US     500
+#define     SERVO_ACUAL_MINDUTY_US    1000
+#define     TMR2_SERVO_CYCLCE_US      20000
+#define     SERVO_RANGE_US            1000
+#define     SERVO_RANGE_DEGS          60
+#define     SERVO_OVERSHT_COMPS       2
 #define     TMR2_SERVO_BITMASK        b'00000111'
+#define     SERVO0_BIT                0x00
+#define     SERVO1_BIT                0x01
+#define     SERVO2_BIT                0x02
 #define     TMR2_SERVO_PORT           PORTD
 #define     TMR2_SERVO_TRIS           TRISD
 #define     TMR1_CLK_KHZ              (CLOCK_KHZ/4)

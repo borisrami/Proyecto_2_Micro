@@ -37,14 +37,27 @@ WSAVE       RES     1
 ; global variables
 ;-------------------------------------------------------------------------------
 ;-------------------------------------------------------------------------------
+; extern variables
+;-------------------------------------------------------------------------------
+  EXTERN    SRV_TICKS
+;-------------------------------------------------------------------------------
 ; scope variables
 ;-------------------------------------------------------------------------------
 ISR_UDATAS      UDATA
 TEMP0_08BIT     RES     1
+
+ISR_ABSDATA     UDATA   0x20 ; BANK0
+SRV1_ANGLE      RES     1
+SRV2_ANGLE      RES     1
+SRV3_ANGLE      RES     1
+TMPME           RES     1
 ;-----------------------------------------------------------------------------------------------------------------------
 ; global declarations
 ;-----------------------------------------------------------------------------------------------------------------------
   GLOBAL    ISR
+  GLOBAL    SRV1_ANGLE
+  GLOBAL    SRV2_ANGLE
+  GLOBAL    SRV3_ANGLE
 ;-----------------------------------------------------------------------------------------------------------------------
 ; code
 ;-----------------------------------------------------------------------------------------------------------------------
@@ -66,6 +79,36 @@ ISR:
   MOVWF     FSRSAVE
 ;--------------------------------------------------------
   BANKSEL   PIR1
+  BTFSS     PIR1,       CCP1IF
+  GOTO OTHER_IR
+  BCF       PIR1,       CCP1IF
+  BANKSEL   SRV_TICKS
+  DECFSZ    SRV_TICKS
+  GOTO      C1
+  MOVLW     ~TMR2_SERVO_BITMASK
+  ANDWF     TMR2_SERVO_PORT
+  BANKSEL   T1CON
+  BCF       T1CON,      TMR1ON
+  GOTO      EXIT_ISR
+C1:
+  MOVF      SRV_TICKS,  W
+  ADDLW     1
+  MOVWF     TMPME
+  ;
+  MOVF      SRV1_ANGLE, W
+  SUBWF     TMPME,      W
+  BTFSC     STATUS,   Z
+  BCF       TMR2_SERVO_PORT,  SERVO0_BIT
+  MOVF      SRV2_ANGLE, W
+  SUBWF     TMPME,      W
+  BTFSC     STATUS,   Z
+  BCF       TMR2_SERVO_PORT,  SERVO1_BIT
+  MOVF      SRV3_ANGLE, W
+SUBWF     TMPME,      W
+  BTFSC     STATUS,   Z
+  BCF       TMR2_SERVO_PORT,  SERVO2_BIT
+  GOTO      EXIT_ISR
+OTHER_IR:
   BTFSC     PIR1,       TMR2IF
   GOTO      SERVICE_TIMER2
   ;BTFSC     PIR1,       ADIF

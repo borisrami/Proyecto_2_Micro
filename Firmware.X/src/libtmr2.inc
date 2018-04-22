@@ -40,9 +40,9 @@
 
 #define   PIR2_VAL      ((TMR2_TICK_US*CLOCK_KHZ)/(4000*TMR2_PRESCAL*TMR2_POSTSCAL)-1)
 
-MOVLTW  macro   mS
+MOVLTW  macro   uS
   local ticks, ticksL
-ticks set (mS*1000)/TMR2_TICK_US
+ticks set (uS)/TMR2_TICK_US
 ticksL set (ticks & 0xFF)
   MOVLW ticksL
   endm
