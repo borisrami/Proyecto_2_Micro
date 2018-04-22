@@ -30,6 +30,8 @@
   EXTERN    SRV_TICKS
   EXTERN    __gptrget1
   EXTERN    SRV1_ANGLE
+  EXTERN    SRV2_ANGLE
+  EXTERN    SRV3_ANGLE
 ;-------------------------------------------------------------------------------
 ; code
 ;-------------------------------------------------------------------------------
@@ -51,6 +53,7 @@ COMMAND_EXEC:
 RELMOVE:
   RETURN
 ABSMOVE:
+  ; Primer Argumento
   MOVLW       LOW(ORPM01_ARRGS)
   MOVWF       STK01
   MOVLW       HIGH(ORPM01_ARRGS)
@@ -58,12 +61,60 @@ ABSMOVE:
   MOVLW       0x00
   PAGESEL     __gptrget1
   CALL        __gptrget1
+  PAGESEL     $
+  BANKSEL     SRV1_ANGLE
   MOVWF       STK00
   SUBLW       SERVO_RANGE_DEGS
   BTFSS       STATUS,   C
   RETURN      ; El ángulo está fuera de rango
   MOVF        STK00,    W
   MOVWF       SRV1_ANGLE
+  ; Segundo Argumento
+  MOVLW       LOW(ORPM01_ARRGS+1)
+  MOVWF       STK01
+  MOVLW       HIGH(ORPM01_ARRGS+1)
+  MOVWF       STK00
+  MOVLW       0x00
+  PAGESEL     __gptrget1
+  CALL        __gptrget1
+  PAGESEL     $
+  BANKSEL     SRV2_ANGLE
+  MOVWF       STK00
+  SUBLW       SERVO_RANGE_DEGS
+  BTFSS       STATUS,   C
+  RETURN      ; El ángulo está fuera de rango
+  MOVF        STK00,    W
+  MOVWF       SRV2_ANGLE
+  ; Tercer Argumento
+  MOVLW       LOW(ORPM01_ARRGS+2)
+  MOVWF       STK01
+  MOVLW       HIGH(ORPM01_ARRGS+2)
+  MOVWF       STK00
+  MOVLW       0x00
+  PAGESEL     __gptrget1
+  CALL        __gptrget1
+  PAGESEL     $
+  BANKSEL     SRV3_ANGLE
+  MOVWF       STK00
+  XORLW       0x00
+  BTFSC       STATUS,   Z
+  ; ARG = 0x00
+  GOTO        MOVPOS1
+  MOVF        STK00,    W
+  XORLW       0x01
+  BTFSC       STATUS,   Z
+  ; ARG = 0x01
+  GOTO        MOVPOS2
+  RETURN      ; Solo puede ser 0 o 1.
+MOVPOS1:
+  MOVLW       SERVO_RANGE_DEGS
+  MOVWF       SRV3_ANGLE
+  GOTO        EXIT0
+MOVPOS2:
+  MOVLW       SERVO_RANGE_DEGS/2
+  MOVWF       SRV3_ANGLE
+  GOTO        EXIT0
+EXIT0:
   BCF         ORPM01_FLAGS, ORPM01_READY
   RETURN
   END
