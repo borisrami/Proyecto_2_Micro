@@ -14,11 +14,11 @@
 ;                   OTRO TIPO DE ACCIONES EN EL SOFTWARE.
 ;
 ;===-----------------------------------------------------------------------===//
-#define     CLOCK_KHZ                 18432
+#define     CLOCK_KHZ                 20000
 #define     BAUD_RATE                 57600
 #define     TMR2_TICK_US              500
 #define     TMR2_PRESCAL              4
-#define     TMR2_POSTSCAL             6
+#define     TMR2_POSTSCAL             10
 #define     TMR2_INTERRUPT
 #define     TMR2_SERVO
 #define     TMR2_SERVO_MINDUTY_US     500

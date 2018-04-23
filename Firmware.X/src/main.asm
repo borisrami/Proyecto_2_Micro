@@ -130,7 +130,7 @@ SETUP:
   BCF	    TXSTA,        BRGH
   BANKSEL   SPBRGH
   CLRF	    SPBRGH
-  MOVLW	    0x19
+  MOVLW	    0x15
   MOVWF	    SPBRG
   ; -> Activa el receptor asíncrono
   BANKSEL   RCSTA
