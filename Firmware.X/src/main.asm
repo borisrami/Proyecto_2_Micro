@@ -185,8 +185,6 @@ BUSY_WAIT:
   ; BUSY WAIT descarga el trabajo del ISR en una rutina cíclica que polea los
   ; resultados
   CALL      RCV_LOOPER
-  BANKSEL   ORPM01_FLAGS
-  BTFSC     ORPM01_FLAGS, ORPM01_READY
   CALL      COMMAND_EXEC
   GOTO      BUSY_WAIT
   END

@@ -38,6 +38,9 @@
 #define     TMR1_COUT_RATE_US         5
 #define     EXECUTER_ABSMOVE          0x11
 #define     EXECUTER_RELMOVE          0x22
+#define     REPORTER_ENOCMD           0xA0
+#define     REPORTER_ERANGE           0xA1
+#define     REPORTER_UPDATE           0xA2
 ;#define     TMR1_INTERRUPT   
     
     ; Obliga a macros.inc a ser importado después de este archivo.

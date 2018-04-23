@@ -25,6 +25,11 @@
 ;-------------------------------------------------------------------------------
   GLOBAL COMMAND_EXEC
 ;-------------------------------------------------------------------------------
+; scope variables
+;-------------------------------------------------------------------------------
+ISR_UDATAS      UDATA
+MARCANDO        RES     1
+;-------------------------------------------------------------------------------
 ; extern declarations
 ;-------------------------------------------------------------------------------
   EXTERN    SRV_TICKS
@@ -39,7 +44,7 @@ COMMAND_EXEC            CODE
 COMMAND_EXEC:
   BANKSEL     ORPM01_FLAGS
   BTFSS       ORPM01_FLAGS, ORPM01_READY
-  RETURN
+  RETLW       0x00
   MOVF        ORPM01_OPCODE,  W
   XORLW       EXECUTER_ABSMOVE
   BTFSC       STATUS,   Z
@@ -49,9 +54,82 @@ COMMAND_EXEC:
   BTFSC       STATUS,   Z
   GOTO        RELMOVE
   BCF         ORPM01_FLAGS, ORPM01_READY
-  RETURN
+  RETLW       REPORTER_ENOCMD
 RELMOVE:
-  RETURN
+  ; Primer Argumento
+  MOVLW       LOW(ORPM01_ARRGS)
+  MOVWF       STK01
+  MOVLW       HIGH(ORPM01_ARRGS)
+  MOVWF       STK00
+  MOVLW       0x00
+  PAGESEL     __gptrget1
+  CALL        __gptrget1
+  PAGESEL     $
+  MOVWF       STK00
+  BANKSEL     SRV1_ANGLE
+  ADDWF       SRV1_ANGLE
+  MOVF        SRV1_ANGLE, W
+  SUBLW       SERVO_RANGE_DEGS
+  BTFSS       STATUS,   C
+  GOTO        R0  ; Fuera de rango
+  GOTO        R1  ; En rango
+R0:
+  BTFSC       STK00,    7
+  GOTO        R0R ; Si bit7 es 1, entonces es una resta
+  GOTO        R0S ; Si bit7 es 0, entonces es una suma
+R0R:
+  MOVLW       0
+  MOVWF       SRV1_ANGLE
+  GOTO        R1
+R0S:
+  MOVLW       SERVO_RANGE_DEGS
+  MOVWF       SRV1_ANGLE
+  GOTO        R1
+R1:
+  ; Segundo Argumento
+  MOVLW       LOW(ORPM01_ARRGS+1)
+  MOVWF       STK01
+  MOVLW       HIGH(ORPM01_ARRGS+1)
+  MOVWF       STK00
+  MOVLW       0x00
+  PAGESEL     __gptrget1
+  CALL        __gptrget1
+  PAGESEL     $
+  MOVWF       STK00
+  BANKSEL     SRV2_ANGLE
+  ADDWF       SRV2_ANGLE
+  MOVF        SRV2_ANGLE, W
+  SUBLW       SERVO_RANGE_DEGS
+  BTFSS       STATUS,   C
+  GOTO        R2  ; Fuera de rango
+  GOTO        R3  ; En rango
+R2:
+  BTFSC       STK00,    7
+  GOTO        R2R ; Si bit7 es 1, entonces es una resta
+  GOTO        R2S ; Si bit7 es 0, entonces es una suma
+R2R:
+  MOVLW       0
+  MOVWF       SRV2_ANGLE
+  GOTO        R3
+R2S:
+  MOVLW       SERVO_RANGE_DEGS
+  MOVWF       SRV2_ANGLE
+  GOTO        R3
+R3:
+  ; Tercer Argumento
+  MOVLW       LOW(ORPM01_ARRGS+2)
+  MOVWF       STK01
+  MOVLW       HIGH(ORPM01_ARRGS+2)
+  MOVWF       STK00
+  MOVLW       0x00
+  PAGESEL     __gptrget1
+  CALL        __gptrget1
+  PAGESEL     $
+  BANKSEL     MARCANDO
+  XORWF       MARCANDO
+  BTFSC       MARCANDO, 0
+  GOTO        MOVPOS2 ; MARCANDO es 0x01
+  GOTO        MOVPOS1 ; MARCANDO es 0x00
 ABSMOVE:
   ; Primer Argumento
   MOVLW       LOW(ORPM01_ARRGS)
@@ -66,7 +144,7 @@ ABSMOVE:
   MOVWF       STK00
   SUBLW       SERVO_RANGE_DEGS
   BTFSS       STATUS,   C
-  RETURN      ; El ángulo está fuera de rango
+  RETLW       REPORTER_ERANGE ; El ángulo está fuera de rango
   MOVF        STK00,    W
   MOVWF       SRV1_ANGLE
   ; Segundo Argumento
@@ -82,7 +160,7 @@ ABSMOVE:
   MOVWF       STK00
   SUBLW       SERVO_RANGE_DEGS
   BTFSS       STATUS,   C
-  RETURN      ; El ángulo está fuera de rango
+  RETLW       REPORTER_ERANGE ; El ángulo está fuera de rango
   MOVF        STK00,    W
   MOVWF       SRV2_ANGLE
   ; Tercer Argumento
@@ -98,24 +176,28 @@ ABSMOVE:
   MOVWF       STK00
   XORLW       0x00
   BTFSC       STATUS,   Z
-  ; ARG = 0x00
-  GOTO        MOVPOS1
+  GOTO        MOVPOS1 ; ARG = 0x00
   MOVF        STK00,    W
   XORLW       0x01
   BTFSC       STATUS,   Z
-  ; ARG = 0x01
-  GOTO        MOVPOS2
-  RETURN      ; Solo puede ser 0 o 1.
+  GOTO        MOVPOS2 ; ARG = 0x01
+  RETURN      REPORTER_ERANGE ; Solo puede ser 0 o 1.
 MOVPOS1:
   MOVLW       SERVO_RANGE_DEGS
   MOVWF       SRV3_ANGLE
+  BANKSEL     MARCANDO
+  MOVLW       0x00
+  MOVWF       MARCANDO
   GOTO        EXIT0
 MOVPOS2:
   MOVLW       SERVO_RANGE_DEGS/2
   MOVWF       SRV3_ANGLE
+  BANKSEL     MARCANDO
+  MOVLW       0x01
+  MOVWF       MARCANDO
   GOTO        EXIT0
 EXIT0:
   BCF         ORPM01_FLAGS, ORPM01_READY
-  RETURN
+  RETLW       REPORTER_UPDATE
   END
   
