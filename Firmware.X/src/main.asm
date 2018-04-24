@@ -186,8 +186,8 @@ BUSY_WAIT   CODE
 BUSY_WAIT:
   ; BUSY WAIT descarga el trabajo del ISR en una rutina cíclica que polea los
   ; resultados
-  BANKSEL RCSTA
-  BTFSC RCSTA, OERR
+  BANKSEL PIR1
+  BTFSC PIR1,RCIF 
   BSF PORTD, RD3
   BCF PORTD, RD3
   CALL      RCV_LOOPER
