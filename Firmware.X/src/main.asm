@@ -130,8 +130,8 @@ SETUP:
   BCF	    TXSTA,        BRGH
   BANKSEL   SPBRGH
   CLRF	    SPBRGH
-  ; 20MHz con la anterior config: 50,000 bps
-  MOVLW	    24
+  ; 20MHz con la anterior config: 19,200 bps
+  MOVLW	    64
   MOVWF	    SPBRG
   ; -> Activa el receptor asíncrono
   BANKSEL   RCSTA
@@ -158,6 +158,15 @@ SETUP:
   BLOCK_MS  1
   BANKSEL   ADCON0
   BSF       ADCON0,   NOT_DONE
+EXTERN      AUTO_EXEC
+  MOVLW     0xFF
+  MOVWF     AUTO_EXEC
+  ; Eliminar cualquier posible overrun
+  BANKSEL   RCSTA
+  BCF	    RCSTA,        CREN
+  BLOCK_MS  1
+  BANKSEL   RCSTA
+  BSF	    RCSTA,        CREN
   GOTO      BUSY_WAIT
 L1: ; Esta etiqueta es una trampa :3
   GOTO	    L1

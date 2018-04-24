@@ -40,6 +40,7 @@ WSAVE       RES     1
 ; extern variables
 ;-------------------------------------------------------------------------------
   EXTERN    SRV_TICKS
+  EXTERN    AUTO_EXEC
   EXTERN    _fast_map_255_70
 ;-------------------------------------------------------------------------------
 ; scope variables
@@ -92,7 +93,7 @@ ISR:
   ANDWF     TMR2_SERVO_PORT
   BANKSEL   T1CON
   BCF       T1CON,      TMR1ON
-  GOTO      OTHER_IR
+  GOTO      EXIT_ISR
 C1:
   MOVF      SRV_TICKS,  W
   ADDLW     1
@@ -124,6 +125,10 @@ SERVICE_ADC:
   ; LIMPIAR LA BANDERA
   BANKSEL   PIR1
   BCF       PIR1,       ADIF
+  BANKSEL   AUTO_EXEC
+  MOVF      AUTO_EXEC,  W
+  BTFSC     STATUS,     Z
+  GOTO      EXIT_ISR
   BANKSEL   ADCON0
   MOVF      ADCON0,     W
   ANDLW     15<<CHS0

@@ -24,11 +24,13 @@
 ; global declarations
 ;-------------------------------------------------------------------------------
   GLOBAL COMMAND_EXEC
+  GLOBAL AUTO_EXEC
 ;-------------------------------------------------------------------------------
 ; scope variables
 ;-------------------------------------------------------------------------------
 ISR_UDATAS      UDATA
 MARCANDO        RES     1
+AUTO_EXEC       RES     1
 ;-------------------------------------------------------------------------------
 ; extern declarations
 ;-------------------------------------------------------------------------------
@@ -53,9 +55,30 @@ COMMAND_EXEC:
   XORLW       EXECUTER_RELMOVE
   BTFSC       STATUS,   Z
   GOTO        RELMOVE
+  MOVF        ORPM01_OPCODE,  W
+  XORLW       EXECUTER_AUTO
+  BTFSC       STATUS,   Z
+  GOTO        AUTO
+  MOVF        ORPM01_OPCODE,  W
+  XORLW       EXECUTER_MANUAL
+  BTFSC       STATUS,   Z
+  GOTO        MANUAL
   BCF         ORPM01_FLAGS, ORPM01_READY
   RETLW       REPORTER_ENOCMD
+AUTO:
+  BANKSEL     AUTO_EXEC
+  CLRF        AUTO_EXEC
+  GOTO        EXIT0
+MANUAL:
+  BANKSEL     AUTO_EXEC
+  MOVLW       0xFF
+  MOVWF       AUTO_EXEC
+  GOTO        EXIT0
 RELMOVE:
+  BANKSEL   AUTO_EXEC
+  MOVF      AUTO_EXEC,  W
+  BTFSS     STATUS,     Z
+  GOTO      EXIT0       ; Salir sin aplicar los efectos colaterales
   ; Primer Argumento
   MOVLW       LOW(ORPM01_ARRGS)
   MOVWF       STK01
@@ -131,6 +154,10 @@ R3:
   GOTO        MOVPOS2 ; MARCANDO es 0x01
   GOTO        MOVPOS1 ; MARCANDO es 0x00
 ABSMOVE:
+  BANKSEL   AUTO_EXEC
+  MOVF      AUTO_EXEC,  W
+  BTFSS     STATUS,     Z
+  GOTO      EXIT0       ; Salir sin aplicar los efectos colaterales
   ; Primer Argumento
   MOVLW       LOW(ORPM01_ARRGS)
   MOVWF       STK01

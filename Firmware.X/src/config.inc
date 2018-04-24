@@ -15,7 +15,7 @@
 ;
 ;===-----------------------------------------------------------------------===//
 #define     CLOCK_KHZ                 20000
-#define     BAUD_RATE                 57600
+#define     BAUD_RATE                 19200
 #define     TMR2_TICK_US              500
 #define     TMR2_PRESCAL              4
 #define     TMR2_POSTSCAL             5
@@ -38,6 +38,8 @@
 #define     TMR1_COUT_RATE_US         5
 #define     EXECUTER_ABSMOVE          0x11
 #define     EXECUTER_RELMOVE          0x22
+#define     EXECUTER_AUTO             0x10
+#define     EXECUTER_MANUAL           0x12
 #define     REPORTER_ENOCMD           0xA0
 #define     REPORTER_ERANGE           0xA1
 #define     REPORTER_UPDATE           0xA2
