@@ -84,7 +84,7 @@ ISR:
 ;--------------------------------------------------------
   BANKSEL   PIR1
   BTFSS     PIR1,       CCP1IF
-  GOTO OTHER_IR
+  GOTO      OTHER_IR
   BCF       PIR1,       CCP1IF
   BANKSEL   SRV_TICKS
   DECFSZ    SRV_TICKS
@@ -111,7 +111,7 @@ C1:
   SUBWF     TMPME,      W
   BTFSC     STATUS,   Z
   BCF       TMR2_SERVO_PORT,  SERVO2_BIT
-  GOTO      OTHER_IR
+  GOTO      EXIT_ISR
 OTHER_IR:
   BTFSC     PIR1,       TMR2IF
   GOTO      SERVICE_TIMER2

@@ -154,6 +154,9 @@ SETUP:
   ; ADFM: 0 LEFT; VCFG1: 0 VSS; VCFG0: 0 VDD
   MOVLW     (b'0'<<ADFM)|(b'0'<<VCFG1)|(b'0'<<VCFG0)
   MOVWF     ADCON1
+  ; Activa Interrupción
+  BANKSEL   PIE1
+  BSF       PIE1,       ADIE
   ; Iniciar la conversión
   BLOCK_MS  1
   BANKSEL   ADCON0
