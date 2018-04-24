@@ -141,6 +141,7 @@ SETUP:
   BSF	    TRISC,        RC7   ; RX
   BCF	    TRISC,        RC6   ; TX
   BCF       TRISD,        RD3
+  CLRF      TRISA
   BSF       ADC1_TRIS,    ADC1_PORT_BIT
   BSF       ADC2_TRIS,    ADC2_PORT_BIT
   BANKSEL   ANSEL
@@ -193,7 +194,13 @@ BUSY_WAIT   CODE
 BUSY_WAIT:
   ; BUSY WAIT descarga el trabajo del ISR en una rutina cíclica que polea los
   ; resultados
+  PAGESEL   RCV_LOOPER
   CALL      RCV_LOOPER
+  PAGESEL   $
+  PAGESEL   COMMAND_EXEC
   CALL      COMMAND_EXEC
+  PAGESEL   $
+  BANKSEL   PORTA
+  MOVWF     PORTA
   GOTO      BUSY_WAIT
   END
