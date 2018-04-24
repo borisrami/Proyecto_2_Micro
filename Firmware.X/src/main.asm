@@ -139,6 +139,8 @@ SETUP:
   BANKSEL   TRISC
   BSF	    TRISC,        RC7   ; RX
   BCF	    TRISC,        RC6   ; TX
+  BANKSEL TRISD
+  BCF TRISD, RD3 ; 
   GOTO      BUSY_WAIT
 L1: ; Esta etiqueta es una trampa :3
   GOTO	    L1
@@ -184,6 +186,10 @@ BUSY_WAIT   CODE
 BUSY_WAIT:
   ; BUSY WAIT descarga el trabajo del ISR en una rutina cíclica que polea los
   ; resultados
+  BANKSEL RCSTA
+  BTFSC RCSTA, OERR
+  BSF PORTD, RD3
+  BCF PORTD, RD3
   CALL      RCV_LOOPER
   CALL      COMMAND_EXEC
   GOTO      BUSY_WAIT
