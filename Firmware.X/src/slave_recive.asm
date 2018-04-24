@@ -317,6 +317,9 @@ CHAR_VAL:
 ;-------------------------------------------------------------------------------
 FLUSHCHAR   CODE
 FLUSHCHAR:
+  BANKSEL   PORTD
+  MOVLW     1<<RD3
+  XORWF     PORTD,      RD3
   BANKSEL   RCREG
   MOVF      RCREG,      W
   RETURN

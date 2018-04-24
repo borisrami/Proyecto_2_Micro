@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=src/_cmuli.asm src/_chksm.asm src/_mulchar.asm src/_gptrget1.asm src/_gptrput1.asm src/_putbuf.asm
+SOURCEFILES_QUOTED_IF_SPACED=src/_cmuli.asm src/_chksm.asm src/_mulchar.asm src/_gptrget1.asm src/_gptrput1.asm src/_putbuf.asm src/_maputil.asm
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/src/_cmuli.o ${OBJECTDIR}/src/_chksm.o ${OBJECTDIR}/src/_mulchar.o ${OBJECTDIR}/src/_gptrget1.o ${OBJECTDIR}/src/_gptrput1.o ${OBJECTDIR}/src/_putbuf.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/src/_cmuli.o.d ${OBJECTDIR}/src/_chksm.o.d ${OBJECTDIR}/src/_mulchar.o.d ${OBJECTDIR}/src/_gptrget1.o.d ${OBJECTDIR}/src/_gptrput1.o.d ${OBJECTDIR}/src/_putbuf.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/src/_cmuli.o ${OBJECTDIR}/src/_chksm.o ${OBJECTDIR}/src/_mulchar.o ${OBJECTDIR}/src/_gptrget1.o ${OBJECTDIR}/src/_gptrput1.o ${OBJECTDIR}/src/_putbuf.o ${OBJECTDIR}/src/_maputil.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/src/_cmuli.o.d ${OBJECTDIR}/src/_chksm.o.d ${OBJECTDIR}/src/_mulchar.o.d ${OBJECTDIR}/src/_gptrget1.o.d ${OBJECTDIR}/src/_gptrput1.o.d ${OBJECTDIR}/src/_putbuf.o.d ${OBJECTDIR}/src/_maputil.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/src/_cmuli.o ${OBJECTDIR}/src/_chksm.o ${OBJECTDIR}/src/_mulchar.o ${OBJECTDIR}/src/_gptrget1.o ${OBJECTDIR}/src/_gptrput1.o ${OBJECTDIR}/src/_putbuf.o
+OBJECTFILES=${OBJECTDIR}/src/_cmuli.o ${OBJECTDIR}/src/_chksm.o ${OBJECTDIR}/src/_mulchar.o ${OBJECTDIR}/src/_gptrget1.o ${OBJECTDIR}/src/_gptrput1.o ${OBJECTDIR}/src/_putbuf.o ${OBJECTDIR}/src/_maputil.o
 
 # Source Files
-SOURCEFILES=src/_cmuli.asm src/_chksm.asm src/_mulchar.asm src/_gptrget1.asm src/_gptrput1.asm src/_putbuf.asm
+SOURCEFILES=src/_cmuli.asm src/_chksm.asm src/_mulchar.asm src/_gptrget1.asm src/_gptrput1.asm src/_putbuf.asm src/_maputil.asm
 
 
 CFLAGS=
@@ -142,6 +142,14 @@ ${OBJECTDIR}/src/_putbuf.o: src/_putbuf.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${DEP_GEN} -d "${OBJECTDIR}/src/_putbuf.o"
 	@${FIXDEPS} "${OBJECTDIR}/src/_putbuf.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
+${OBJECTDIR}/src/_maputil.o: src/_maputil.asm  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/src" 
+	@${RM} ${OBJECTDIR}/src/_maputil.o.d 
+	@${RM} ${OBJECTDIR}/src/_maputil.o 
+	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/src/_maputil.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -d__DEBUG -d__MPLAB_DEBUGGER_PICKIT2=1 -q -p$(MP_PROCESSOR_OPTION)  -l\"${OBJECTDIR}/src/_maputil.lst\" -e\"${OBJECTDIR}/src/_maputil.err\" $(ASM_OPTIONS)    -o\"${OBJECTDIR}/src/_maputil.o\" \"src/_maputil.asm\" 
+	@${DEP_GEN} -d "${OBJECTDIR}/src/_maputil.o"
+	@${FIXDEPS} "${OBJECTDIR}/src/_maputil.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
+	
 else
 ${OBJECTDIR}/src/_cmuli.o: src/_cmuli.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/src" 
@@ -190,6 +198,14 @@ ${OBJECTDIR}/src/_putbuf.o: src/_putbuf.asm  nbproject/Makefile-${CND_CONF}.mk
 	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/src/_putbuf.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION)  -l\"${OBJECTDIR}/src/_putbuf.lst\" -e\"${OBJECTDIR}/src/_putbuf.err\" $(ASM_OPTIONS)    -o\"${OBJECTDIR}/src/_putbuf.o\" \"src/_putbuf.asm\" 
 	@${DEP_GEN} -d "${OBJECTDIR}/src/_putbuf.o"
 	@${FIXDEPS} "${OBJECTDIR}/src/_putbuf.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
+	
+${OBJECTDIR}/src/_maputil.o: src/_maputil.asm  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/src" 
+	@${RM} ${OBJECTDIR}/src/_maputil.o.d 
+	@${RM} ${OBJECTDIR}/src/_maputil.o 
+	@${FIXDEPS} dummy.d -e "${OBJECTDIR}/src/_maputil.err" $(SILENT) -c ${MP_AS} $(MP_EXTRA_AS_PRE) -q -p$(MP_PROCESSOR_OPTION)  -l\"${OBJECTDIR}/src/_maputil.lst\" -e\"${OBJECTDIR}/src/_maputil.err\" $(ASM_OPTIONS)    -o\"${OBJECTDIR}/src/_maputil.o\" \"src/_maputil.asm\" 
+	@${DEP_GEN} -d "${OBJECTDIR}/src/_maputil.o"
+	@${FIXDEPS} "${OBJECTDIR}/src/_maputil.o.d" $(SILENT) -rsi ${MP_AS_DIR} -c18 
 	
 endif
 

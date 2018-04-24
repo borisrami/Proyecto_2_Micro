@@ -40,6 +40,7 @@ WSAVE       RES     1
 ; extern variables
 ;-------------------------------------------------------------------------------
   EXTERN    SRV_TICKS
+  EXTERN    _fast_map_255_70
 ;-------------------------------------------------------------------------------
 ; scope variables
 ;-------------------------------------------------------------------------------
@@ -51,6 +52,8 @@ SRV1_ANGLE      RES     1
 SRV2_ANGLE      RES     1
 SRV3_ANGLE      RES     1
 TMPME           RES     1
+FLGS            RES     1
+ADC_START       EQU     0
 ;-----------------------------------------------------------------------------------------------------------------------
 ; global declarations
 ;-----------------------------------------------------------------------------------------------------------------------
@@ -89,7 +92,7 @@ ISR:
   ANDWF     TMR2_SERVO_PORT
   BANKSEL   T1CON
   BCF       T1CON,      TMR1ON
-  GOTO      EXIT_ISR
+  GOTO      OTHER_IR
 C1:
   MOVF      SRV_TICKS,  W
   ADDLW     1
@@ -107,17 +110,77 @@ C1:
   SUBWF     TMPME,      W
   BTFSC     STATUS,   Z
   BCF       TMR2_SERVO_PORT,  SERVO2_BIT
-  GOTO      EXIT_ISR
+  GOTO      OTHER_IR
 OTHER_IR:
   BTFSC     PIR1,       TMR2IF
   GOTO      SERVICE_TIMER2
-  ;BTFSC     PIR1,       ADIF
-  ;GOTO      SERVICE_ADC
+  BTFSC     PIR1,       ADIF
+  GOTO      SERVICE_ADC
   BANKSEL   INTCON
   BTFSC     INTCON,     RBIF
   GOTO      SERVICE_RBCHG
   GOTO      INVALID_INTERRUPT
+SERVICE_ADC:
+  ; LIMPIAR LA BANDERA
+  BANKSEL   PIR1
+  BCF       PIR1,       ADIF
+  BANKSEL   ADCON0
+  MOVF      ADCON0,     W
+  ANDLW     15<<CHS0
+  XORLW     ADC1_ACHNL<<CHS0
+  BTFSC     STATUS,     Z
+  GOTO      SERVICE_ADC1
+  MOVF      ADCON0,     W
+  ANDLW     15<<CHS0
+  XORLW     ADC2_ACHNL<<CHS0
+  BTFSC     STATUS,     Z
+  GOTO      SERVICE_ADC2
+  GOTO      EXIT_ISR
+SERVICE_ADC1:
+  BANKSEL   ADRESH
+  MOVF      ADRESH,     W
+  PAGESEL   _fast_map_255_70
+  CALL      _fast_map_255_70
+  PAGESEL   $
+  BANKSEL   SRV1_ANGLE
+  MOVWF     SRV1_ANGLE
+  ; Cambiar de canal
+  BANKSEL   ADCON0
+  MOVF      ADCON0,     W
+  ANDLW     ~(15<<CHS0)
+  XORLW     ADC2_ACHNL<<CHS0
+  MOVWF     ADCON0
+  ; Indicar al TIMER2 activar ADC de nuevo
+  BANKSEL   FLGS
+  BSF       FLGS,       ADC_START
+  GOTO      EXIT_ISR
+SERVICE_ADC2:
+  BANKSEL   ADRESH
+  MOVF      ADRESH,     W
+  PAGESEL   _fast_map_255_70
+  CALL      _fast_map_255_70
+  PAGESEL   $
+  BANKSEL   SRV2_ANGLE
+  MOVWF     SRV2_ANGLE
+   ; Cambiar de canal
+  BANKSEL   ADCON0
+  MOVF      ADCON0,     W
+  ANDLW     ~(15<<CHS0)
+  XORLW     ADC1_ACHNL<<CHS0
+  MOVWF     ADCON0
+  ; Indicar al TIMER2 activar ADC de nuevo
+  BANKSEL   FLGS
+  BSF       FLGS,       ADC_START
+  GOTO      EXIT_ISR
 SERVICE_TIMER2:
+  BANKSEL   FLGS
+  BTFSC     FLGS,       ADC_START
+  GOTO      SET_AD
+  GOTO      SKIP_AD
+SET_AD:
+  BANKSEL   ADCON0
+  BSF       ADCON0,   NOT_DONE
+SKIP_AD:
   CALL      TMR2_ISR
   GOTO      EXIT_ISR
 SERVICE_RBCHG:

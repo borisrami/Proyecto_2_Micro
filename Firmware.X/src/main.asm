@@ -130,7 +130,8 @@ SETUP:
   BCF	    TXSTA,        BRGH
   BANKSEL   SPBRGH
   CLRF	    SPBRGH
-  MOVLW	    0x15
+  ; 20MHz con la anterior config: 50,000 bps
+  MOVLW	    24
   MOVWF	    SPBRG
   ; -> Activa el receptor asíncrono
   BANKSEL   RCSTA
@@ -139,57 +140,47 @@ SETUP:
   BANKSEL   TRISC
   BSF	    TRISC,        RC7   ; RX
   BCF	    TRISC,        RC6   ; TX
-  BANKSEL TRISD
-  BCF TRISD, RD3 ; 
+  BCF       TRISD,        RD3
+  BSF       ADC1_TRIS,    ADC1_PORT_BIT
+  BSF       ADC2_TRIS,    ADC2_PORT_BIT
+  BANKSEL   ANSEL
+  BSF       ADC1_ANSL,    ADC1_ABIT
+  BSF       ADC2_ANSL,    ADC2_ABIT
+  BANKSEL   ADCON0
+  ; ADCS0: 10 FOSC/32; CHS0: ADC1_ACHNL; NOT_DONE: 0 NO CONV; ADON: 1 ON
+  MOVLW     (b'00'<<ADCS0)|(ADC1_ACHNL<<CHS0)|(b'0'<<NOT_DONE)|(b'1'<<ADON)
+  MOVWF     ADCON0
+  BANKSEL   ADCON1
+  ; ADFM: 0 LEFT; VCFG1: 0 VSS; VCFG0: 0 VDD
+  MOVLW     (b'0'<<ADFM)|(b'0'<<VCFG1)|(b'0'<<VCFG0)
+  MOVWF     ADCON1
+  ; Iniciar la conversión
+  BLOCK_MS  1
+  BANKSEL   ADCON0
+  BSF       ADCON0,   NOT_DONE
   GOTO      BUSY_WAIT
 L1: ; Esta etiqueta es una trampa :3
   GOTO	    L1
 ;-------------------------------------------------------------------------------
-; Problema: Con 18.432MHz no se puede generar un PWM descente. Es imposible usar
-; el módulo PWM a esa frecuencia para mover un servo, sin contar que el PIC
-; cuenta con solo dos PWM: uno de ellos debe ser por software.
+; El PWM se genera por software. Utilizando el Timer2 como apoyo para generar
+; los 500uS de tiempo de espera mínimo. El ISR suele ocupar gran parte del
+; tiempo de CPU mientras se simula el PWM.
 ;
-; La solución propuesta e implementada es utilizar el TIMER1 y el módulo CCP
-; para generar los 3 "duty cycle" por software en el ISR. En conjunto con el
-; TIMER2, generar el PWM a 50.000 Hz.
+; Atender otras interrupciones puede alterar el ciclo del PWM. Todas las macros
+; calculan los valores para CCP y Timer1 media vez los valores en config.inc
+; sean sanos.
 ;
-; TIMER1 puede contar de 1 en 1 cada 217.01 nanosegundos como mínimo. El tiempo
-; del duty cycle de un servo es una escala lineal que representa ángulos de 0 a
-; 180 en un rango de 1.00 mS a 2.00 mS
+; Con baudrates elevados, es posible que el RC entre en overflow. El programa
+; no intenta recuperarse de los overflow. Se debe tomar en cuenta el tiempo
+; en el ISR durante el PWM antes de elegir un baudrate.
 ;
-; Cada paso discreto del servo se puede representar como 1.00 mS / 180 o
-; 5.556 uS por grado. Para alcanzar 5.556 uS, los registros del CCP se deben
-; configurar en 25.6 (o 26). El resultado es un intervalo de 1.0156 mS con
-; 180 divisiones de 5.642 uS
-;
-; Durante 5.642 uS, que es el tiempo en el que se espera la siguiente
-; interrupción del CCP, el PIC puede ejecutar solamente 26 instrucciones. Esto
-; significa que durante 1.0156 mS el PIC no podrá responder a ninguna
-; interrupción o ejecutar código.
-;
-; En los otros 19 mS, el Timer2 puede apoyar al módulo CCP, al elevar los pines
-; del puerto cada 20.000 mS, esperar 1.000 mS e inmediatamente encender el
-; módulo CCP.
-;
-; Luego de diversas pruebas, el ISR no puede ejecutarse en menos de 26 ciclos de
-; pulsos del reloj. Existen unas macros en TMR2 e ISR que ayudan a calcular
-; automáticamente todos los valores dadas las especificaciones en config.inc
-;
-; Para esta configuración, 75 divisiones en el intervalo de 1000 uS del servo
-; funcionan bien, mientras que 180 simplemente no funciona. Esto es por culpa
-; del ISR. Mientras más tiempo se tarde el ISR, menos resolución tendrá.
-;
-; Con 75 instrucciones para el ISR, las divisiones máximas disminuyen a 60, lo
-; cual resulta razonable y seguro.
+; Los valores en config.inc fueron calibrados, y deben ser calibrados de acuerdo
+; a los servos. No se pueden calibrar los servos individuales.
 ;-------------------------------------------------------------------------------
 BUSY_WAIT   CODE
 BUSY_WAIT:
   ; BUSY WAIT descarga el trabajo del ISR en una rutina cíclica que polea los
   ; resultados
-  BANKSEL RCSTA
-  BTFSC RCSTA, OERR
-  BSF PORTD, RD3
-  BCF PORTD, RD3
   CALL      RCV_LOOPER
   CALL      COMMAND_EXEC
   GOTO      BUSY_WAIT

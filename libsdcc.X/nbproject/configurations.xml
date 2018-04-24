@@ -20,6 +20,7 @@
       <itemPath>src/_gptrget1.asm</itemPath>
       <itemPath>src/_gptrput1.asm</itemPath>
       <itemPath>src/_putbuf.asm</itemPath>
+      <itemPath>src/_maputil.asm</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -31,6 +32,7 @@
       <itemPath>../Firmware.X/lib/_putbuf.c</itemPath>
       <itemPath>../Firmware.X/lib/pic16f887.c</itemPath>
       <itemPath>../Firmware.X/lib/symbols.asm</itemPath>
+      <itemPath>../Firmware.X/lib/_maputil.c</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>

@@ -41,6 +41,16 @@
 #define     REPORTER_ENOCMD           0xA0
 #define     REPORTER_ERANGE           0xA1
 #define     REPORTER_UPDATE           0xA2
+#define     ADC1_PORT_BIT             0x00
+#define     ADC2_PORT_BIT             0x00
+#define     ADC1_TRIS                 TRISA
+#define     ADC2_TRIS                 TRISB
+#define     ADC1_ANSL                 ANSEL
+#define     ADC2_ANSL                 ANSELH
+#define     ADC1_ABIT                 0x00
+#define     ADC2_ABIT                 0x04
+#define     ADC1_ACHNL                0x00
+#define     ADC2_ACHNL                0x0C
 ;#define     TMR1_INTERRUPT   
     
     ; Obliga a macros.inc a ser importado después de este archivo.
